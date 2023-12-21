@@ -1,0 +1,41 @@
+version: "0.2"
+ignorePaths:
+  - archive
+  - dist
+  - node_modules
+dictionaries:
+  - en_US
+  - softwareTerms
+  - bash
+  - node
+  - npm
+  - html
+  - css
+  - typescript
+  - filetypes
+words:
+  - agentkeepalive
+  - backo
+  - baiducloud
+  - corpid
+  - dingtalk
+  - dingtalker
+  - erniebot
+  - errcode
+  - errmsg
+  - fieldname
+  - gerror
+  - idempotency
+  - jiti
+  - keyv
+  - msgtype
+  - nodenext
+  - picocolors
+  - preinstall
+  - trivago
+  - unawaited
+  - wechat
+  - wechaty
+  - yiyan
+ignoreWords:
+  - zhengxs

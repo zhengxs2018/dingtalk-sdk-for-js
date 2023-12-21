@@ -1,0 +1,103 @@
+{
+  "name": "@zhengxs/dingtalk-event-hubs",
+  "version": "0.0.1-beta.0",
+  "description": "",
+  "keywords": [
+    "dingtalk",
+    "event-bus"
+  ],
+  "type": "commonjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "browser": "./dist/exports/web.mjs",
+  "types": "./dist-types/index.d.ts",
+  "exports": {
+    ".": {
+      "node": {
+        "require": "./dist/exports/node.cjs",
+        "default": "./dist/exports/node.mjs"
+      },
+      "types": "./dist-types/index.d.mts",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.mjs"
+    },
+    "./exports/*": {
+      "types": "./dist-types/exports/*.d.ts",
+      "require": "./dist/exports/*.cjs",
+      "default": "./dist/exports/*.mjs"
+    },
+    "./exports/*.mjs": {
+      "types": "./dist-types/exports/*.d.ts",
+      "default": "./dist/exports/*.mjs"
+    },
+    "./exports/*.cjs": {
+      "types": "./dist-types/exports/*.d.ts",
+      "default": "./dist/exports/*.cjs"
+    },
+    "./shims/*": {
+      "types": "./dist-types/shims/*.d.ts",
+      "require": "./dist/shims/*.cjs",
+      "default": "./dist/shims/*.mjs"
+    },
+    "./shims/*.mjs": {
+      "types": "./dist-types/shims/*.d.ts",
+      "default": "./dist/shims/*.mjs"
+    },
+    "./shims/*.cjs": {
+      "types": "./dist-types/shims/*.d.ts",
+      "default": "./dist/shims/*.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffect": [
+    "./dist/shims/*.cjs",
+    "./dist/shims/*.mjs"
+  ],
+  "files": [
+    "dist",
+    "dist-types",
+    "src"
+  ],
+  "scripts": {
+    "build": "pnpm clean && vite build && pnpm extract-api",
+    "watch": "vite build --watch",
+    "clean": "trash dist dist-types temp",
+    "extract-api": "mkdirp ./review && api-extractor run --local"
+  },
+  "peerDependencies": {
+    "eventemitter3": "^5.0.1",
+    "ws": "^8.15.1"
+  },
+  "peerDependenciesMeta": {
+    "eventemitter3": {
+      "optional": true
+    },
+    "ws": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@zhengxs/dingtalk-auth": "workspace:^",
+    "backo2": "^1.0.2"
+  },
+  "devDependencies": {
+    "@types/backo2": "^1.0.4",
+    "eventemitter3": "^5.0.1",
+    "ws": "^8.15.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "homepage": "https://github.com/zhengxs2018/dingtalk-sdk-for-js#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhengxs2018/dingtalk-sdk-for-js",
+    "directory": "packages/dingtalk-event-hubs"
+  },
+  "bugs": {
+    "url": "https://github.com/zhengxs2018/dingtalk-sdk-for-js/issues"
+  },
+  "author": "zhengxs <zhengxs2018@gmail.com>",
+  "license": "MIT"
+}

@@ -1,0 +1,56 @@
+{
+  "name": "dingtalk-sdk-for-js",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "prepare": "husky install",
+    "preinstall": "npx only-allow pnpm",
+    "start": "pnpm task ./examples/wechaty.ts",
+    "dev": "pnpm task --watch ./examples/wechaty.ts",
+    "task": "node --no-warnings -r dotenv/config -r jiti/register",
+    "build": "pnpm -r --if-present build",
+    "watch": "pnpm run --parallel --if-present watch",
+    "lint": "eslint . --ext .ts,.cjs",
+    "lint:fix": "eslint . --ext .ts,.cjs --fix --fix-type [problem,suggestion]",
+    "fmt": "prettier --write \"**/*.{ts,json,,md}\" --log-level warn"
+  },
+  "packageManager": "pnpm@8.0.0",
+  "dependencies": {
+    "@zhengxs/dingtalk-auth": "workspace:^",
+    "@zhengxs/dingtalk-event-hubs": "workspace:^",
+    "@zhengxs/wechaty-puppet-dingtalk": "workspace:^"
+  },
+  "devDependencies": {
+    "@microsoft/api-extractor": "^7.38.3",
+    "@trivago/prettier-plugin-sort-imports": "^4.2.1",
+    "@types/node": "^20.9.0",
+    "@types/ws": "^8.5.9",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "dotenv": "^16.3.1",
+    "eslint": "^8.53.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-define-config": "^1.24.1",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-tsdoc": "^0.2.17",
+    "husky": "^8.0.3",
+    "jiti": "^1.21.0",
+    "lint-staged": "^15.0.2",
+    "mkdirp": "^3.0.1",
+    "prettier": "^3.0.3",
+    "trash-cli": "^5.0.0",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "~5.0.4",
+    "vite": "^4.5.0",
+    "vite-plugin-checker": "^0.6.2",
+    "vite-plugin-dts": "^3.6.3",
+    "vite-plugin-externalize-deps": "^0.7.0",
+    "wechaty": "^1.20.2"
+  },
+  "author": "zhengxs2018 <zhengxs2018@gmail.com>",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT"
+}
