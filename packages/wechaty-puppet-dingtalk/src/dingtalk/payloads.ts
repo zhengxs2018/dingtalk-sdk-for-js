@@ -41,9 +41,6 @@ export type LinkMessagePayload = {
   };
 };
 
-/**
- * webhook 方式不支持
- */
 export type ImageMessagePayload = {
   msgtype: 'picture';
   image: {

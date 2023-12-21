@@ -17,7 +17,8 @@ export async function dtMessageToWechaty(
 
   if (payload.conversationType === '2') {
     ret.roomId = payload.conversationId;
-    // ret.mentionIdList = []
+    // @ts-expect-error
+    ret.mentionIdList = payload.atUsers?.map(u => u.dingtalkId) || [];
   }
 
   // TODO: support more msgtype

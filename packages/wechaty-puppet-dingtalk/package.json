@@ -1,6 +1,6 @@
 {
   "name": "@zhengxs/wechaty-puppet-dingtalk",
-  "version": "0.0.1-beta.0",
+  "version": "0.0.1-beta.2",
   "description": "",
   "sideEffect": false,
   "main": "./dist/index.cjs",

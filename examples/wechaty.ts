@@ -21,6 +21,25 @@ bot.on('logout', user => {
 bot.on('message', async msg => {
   log.info('StarterBot', msg.toString());
 
+  const room = msg.room();
+  if (room) {
+    if (!(await msg.mentionSelf())) {
+      console.log('被提及了');
+    }
+
+    await room.say('dong', msg.talker());
+
+    // hack 解决 wechaty 无法发送 markdown 的问题
+    await puppet.unstable__send(msg.id, {
+      msgtype: 'markdown',
+      markdown: {
+        title: '测试',
+        text: '## 这是 markdown 测试 \n [百度](https://www.baidu.com/)',
+      },
+    });
+    return;
+  }
+
   if (msg.type() === bot.Message.Type.Text) {
     await msg.say('dong');
 
@@ -33,6 +52,15 @@ bot.on('message', async msg => {
     });
 
     await msg.say(urlLink);
+
+    // hack 解决 wechaty 无法发送 markdown 的问题
+    await puppet.unstable__send(msg.id, {
+      msgtype: 'markdown',
+      markdown: {
+        title: '测试',
+        text: '## 这是 markdown 测试 \n [百度](https://www.baidu.com/)',
+      },
+    });
   } else {
     await msg.say('不支持的消息类型');
   }

@@ -1,6 +1,6 @@
 import { AuthCredential } from '@zhengxs/dingtalk-auth';
 import {
-  HubConnection,
+  type HubConnection,
   HubConnectionBuilder,
 } from '@zhengxs/dingtalk-event-hubs';
 import { GError } from 'gerror';
@@ -13,6 +13,7 @@ import {
   dtContactToWechaty,
   type DTMessageRawPayload,
   dtMessageToWechaty,
+  dtRoomMemberToWechaty,
   type DTRoomRawPayload,
   dtRoomToWechaty,
 } from './dingtalk';
@@ -68,6 +69,46 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     return dtRoomToWechaty(this, rawPayload);
   }
 
+  override async roomMemberList(roomId: string): Promise<string[]> {
+    log.verbose('PuppetDingTalk', 'roomMemberList(%s)', roomId);
+
+    const rawPayload = await this.roomRawPayload(roomId);
+
+    const memberIdList = rawPayload.memberList.map(member => member.senderId);
+
+    return memberIdList;
+  }
+
+  override async roomMemberRawPayload(
+    roomId: string,
+    contactId: string,
+  ): Promise<DTContactRawPayload> {
+    log.verbose(
+      'PuppetDingTalk',
+      'roomMemberRawPayload(%s, %s)',
+      roomId,
+      contactId,
+    );
+    const rawPayload = await this.roomRawPayload(roomId);
+
+    const memberPayloadList = rawPayload.memberList || [];
+    const memberPayloadResult = memberPayloadList.find(
+      payload => payload.senderId === contactId,
+    );
+
+    if (memberPayloadResult) {
+      return memberPayloadResult;
+    } else {
+      throw new Error('not found');
+    }
+  }
+
+  override async roomMemberRawPayloadParser(
+    rawPayload: DTContactRawPayload,
+  ): Promise<PUPPET.payloads.RoomMember> {
+    return dtRoomMemberToWechaty(rawPayload);
+  }
+
   override async contactRawPayload(
     contactId: string,
   ): Promise<DTContactRawPayload> {
@@ -100,7 +141,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   ): Promise<DTMessageRawPayload> {
     const messages = this.messages;
 
-    log.info(
+    log.verbose(
       'PuppetDingTalk',
       'messageRawPayload(%s) with messages.length=%d',
       messageId,
@@ -129,9 +170,29 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     return dtMessageToWechaty(this, rawPayload);
   }
 
-  protected async send(
+  /**
+   * hack 解决 wechaty 发送消息不会传消息 ID 的问题
+   *
+   * @param messageId - 消息 ID
+   * @param sayable - 消息内容
+   * @returns
+   */
+  async unstable__send(messageId: string, sayable: Sayable): Promise<void> {
+    const payload = this.messages.get(messageId);
+    if (!payload) return;
+
+    const sayer = new SayableSayer(
+      payload.sessionWebhook,
+      payload.sessionWebhookExpiredTime,
+    );
+
+    // TODO 群聊提及好像有 BUG
+    await sayer.say(sayable);
+  }
+
+  protected async say(
     conversationId: string,
-    Sayable: Sayable,
+    sayable: Sayable,
     mentionIdList?: string[],
   ): Promise<void> {
     const contacts = this.contacts;
@@ -145,7 +206,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
       payload.sessionWebhookExpiredTime,
     );
 
-    await sayer.say(Sayable, mentionIdList || []);
+    await sayer.say(sayable, mentionIdList || []);
   }
 
   override messageSendText(
@@ -160,7 +221,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
       content,
     );
 
-    return this.send(conversationId, content, mentionIdList || []);
+    return this.say(conversationId, content, mentionIdList || []);
   }
 
   override messageSendUrl(
@@ -174,7 +235,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
       urlLinkPayload,
     );
 
-    return this.send(conversationId, {
+    return this.say(conversationId, {
       msgtype: 'link',
       link: {
         title: urlLinkPayload.title,
@@ -204,29 +265,30 @@ export class PuppetDingTalk extends PUPPET.Puppet {
       const payload: DTMessageRawPayload = JSON.parse(event.data);
 
       const { sessionWebhook, sessionWebhookExpiredTime } = payload;
+      const { chatbotUserId, robotCode, chatbotCorpId } = payload;
+
+      const chatbotUser = {
+        senderNick: `🤖️ 默认`,
+        senderId: chatbotUserId,
+        senderStaffId: robotCode,
+        senderCorpId: chatbotCorpId,
+        isAdmin: false,
+        // hack 解决 wechaty 发送消息不会传消息 ID 的问题
+        sessionWebhook,
+        sessionWebhookExpiredTime,
+      };
+
+      contacts.set(chatbotUserId, chatbotUser);
 
       // TODO 这么提前获取机器人的信息
       if (!this.isLoggedIn) {
-        const { chatbotUserId, robotCode, chatbotCorpId } = payload;
-
-        contacts.set(chatbotUserId, {
-          senderNick: `🤖️ 默认`,
-          senderId: chatbotUserId,
-          senderStaffId: robotCode,
-          senderCorpId: chatbotCorpId,
-          isAdmin: false,
-          // hack 解决 wechaty 发送消息不会传消息 ID 的问题
-          sessionWebhook,
-          sessionWebhookExpiredTime,
-        });
-
         await this.login(payload.chatbotUserId);
       }
 
       const { senderCorpId, senderId, senderNick, senderStaffId, isAdmin } =
         payload;
 
-      contacts.set(senderId, {
+      const sender = {
         senderCorpId,
         senderId,
         senderNick,
@@ -235,7 +297,9 @@ export class PuppetDingTalk extends PUPPET.Puppet {
         // hack 解决 wechaty 发送消息不会传消息 ID 的问题
         sessionWebhook,
         sessionWebhookExpiredTime,
-      });
+      };
+
+      contacts.set(senderId, sender);
 
       if (payload.conversationType === '2') {
         const { conversationId, conversationTitle } = payload;
@@ -246,6 +310,9 @@ export class PuppetDingTalk extends PUPPET.Puppet {
           // hack 解决 wechaty 发送消息不会传消息 ID 的问题
           sessionWebhook,
           sessionWebhookExpiredTime,
+
+          // TODO 临时方案，解决钉钉群成员列表获取不到的问题
+          memberList: [chatbotUser, sender],
         });
       }
 

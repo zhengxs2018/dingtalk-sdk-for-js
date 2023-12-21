@@ -50,6 +50,17 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   // (undocumented)
   onStop(): Promise<void>;
   // (undocumented)
+  roomMemberList(roomId: string): Promise<string[]>;
+  // (undocumented)
+  roomMemberRawPayload(
+    roomId: string,
+    contactId: string,
+  ): Promise<DTContactRawPayload>;
+  // (undocumented)
+  roomMemberRawPayloadParser(
+    rawPayload: DTContactRawPayload,
+  ): Promise<PUPPET.payloads.RoomMember>;
+  // (undocumented)
   roomRawPayload(roomId: string): Promise<DTRoomRawPayload>;
   // (undocumented)
   roomRawPayloadParser(
@@ -59,14 +70,14 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   //
   // (undocumented)
   protected rooms: Map<string, DTRoomRawPayload>;
-  // Warning: (ae-forgotten-export) The symbol "Sayable" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
-  protected send(
+  protected say(
     conversationId: string,
-    Sayable: Sayable,
+    sayable: Sayable,
     mentionIdList?: string[],
   ): Promise<void>;
+  // Warning: (ae-forgotten-export) The symbol "Sayable" needs to be exported by the entry point index.d.ts
+  unstable__send(messageId: string, sayable: Sayable): Promise<void>;
 }
 
 // @public (undocumented)

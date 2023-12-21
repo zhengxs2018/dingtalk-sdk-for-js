@@ -49,9 +49,6 @@ export class SayableSayer extends Sender {
     };
 
     switch (message.msgtype) {
-      case MessageType.Text:
-        message.text.content = `${mentionText} ${message.text.content}`;
-        break;
       case MessageType.Markdown: {
         message.markdown.text += ` \n\n------\n\n ###### 此消息通知对象: ${mentionText}`;
         break;
