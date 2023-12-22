@@ -8,7 +8,9 @@ import pkg from './package.json';
 export default defineConfig({
   appType: 'custom',
   plugins: [
-    externalizeDeps(),
+    externalizeDeps({
+      devDeps: true,
+    }),
     dts({
       outDir: './dist-types',
     }),

@@ -6,7 +6,7 @@
     "prepare": "husky install",
     "preinstall": "npx only-allow pnpm",
     "start": "pnpm task ./examples/wechaty.ts",
-    "dev": "pnpm task --watch ./examples/wechaty.ts",
+    "dev": "pnpm task --watch --watch-preserve-output ./examples/wechaty.ts",
     "task": "node --no-warnings -r dotenv/config -r jiti/register",
     "build": "pnpm -r --if-present build",
     "watch": "pnpm run --parallel --if-present watch",

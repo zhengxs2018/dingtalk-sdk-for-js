@@ -110,8 +110,10 @@ export interface DTTextMessageRawPayload extends DTMessageRawPayloadBase {
 export interface DTFileMessageRawPayload extends DTMessageRawPayloadBase {
   msgtype: 'file';
   content: {
-    downloadCode: string;
+    spaceId: string;
     fileName: string;
+    fileId: string;
+    downloadCode: string;
   };
 }
 
@@ -147,6 +149,7 @@ export interface DTVideoMessageRawPayload extends DTMessageRawPayloadBase {
 export interface DTPictureMessageRawPayload extends DTMessageRawPayloadBase {
   msgtype: 'picture';
   content: {
+    pictureDownloadCode: string;
     downloadCode: string;
   };
 }
@@ -160,6 +163,17 @@ export interface DTAudioMessageRawPayload extends DTMessageRawPayloadBase {
   };
 }
 
+export type DTMediaMessageRawPayload =
+  | DTFileMessageRawPayload
+  | DTAudioMessageRawPayload
+  | DTVideoMessageRawPayload
+  | DTPictureMessageRawPayload;
+
+export interface DTUnknownMessageRawPayload extends DTMessageRawPayloadBase {
+  msgtype: 'unknownMsgType';
+  content: { unknownMsgType: string };
+}
+
 // See https://open.dingtalk.com/document/orgapp/receive-message
 export type DTMessageRawPayload =
   | DTTextMessageRawPayload
@@ -167,7 +181,8 @@ export type DTMessageRawPayload =
   | DTFileMessageRawPayload
   | DTAudioMessageRawPayload
   | DTVideoMessageRawPayload
-  | DTPictureMessageRawPayload;
+  | DTPictureMessageRawPayload
+  | DTUnknownMessageRawPayload;
 
 export enum DTMessageType {
   Text = 'text',
@@ -176,4 +191,5 @@ export enum DTMessageType {
   Audio = 'audio',
   Video = 'video',
   Image = 'picture',
+  Unknown = 'unknownMsgType',
 }

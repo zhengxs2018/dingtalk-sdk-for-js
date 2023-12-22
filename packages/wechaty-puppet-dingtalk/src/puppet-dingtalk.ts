@@ -1,15 +1,18 @@
+import { Dingtalk } from '@zhengxs/dingtalk';
 import { AuthCredential } from '@zhengxs/dingtalk-auth';
 import { type HubConnection, HubConnectionBuilder } from '@zhengxs/dingtalk-event-hubs';
+import { FileBox, type FileBoxInterface } from 'file-box';
 import { GError } from 'gerror';
 import * as PUPPET from 'wechaty-puppet';
 import { log } from 'wechaty-puppet';
 
-import { type Sayable, SayableSayer } from './dingtalk';
+import { type DTMediaMessageRawPayload, type Sayable, SayableSayer } from './dingtalk';
 import {
   type DTContactRawPayload,
   dtContactToWechaty,
   type DTMessageRawPayload,
   dtMessageToWechaty,
+  DTMessageType,
   dtRoomMemberToWechaty,
   type DTRoomRawPayload,
   dtRoomToWechaty,
@@ -19,27 +22,35 @@ import {
 export interface PuppetDingTalkOptions extends PUPPET.PuppetOptions {
   clientId?: string;
   clientSecret?: string;
+  credential?: AuthCredential;
 }
 
 export class PuppetDingTalk extends PUPPET.Puppet {
+  protected client: Dingtalk;
   protected credential: AuthCredential;
-
   protected connection?: HubConnection;
 
+  // TODO 使用 keyv 存储方案
   protected contacts = new Map<string, DTContactRawPayload>();
+
+  // TODO 使用 keyv 存储方案
   protected messages = new Map<string, DTMessageRawPayload>();
+
+  // TODO 使用 keyv 存储方案
   protected rooms = new Map<string, DTRoomRawPayload>();
 
   constructor(options: PuppetDingTalkOptions = {}) {
     const {
       clientId = process.env.DINGTALK_CLIENT_ID,
       clientSecret = process.env.DINGTALK_CLIENT_SECRET,
+      credential = new AuthCredential({ clientId, clientSecret }),
       ...rest
     } = options;
 
     super(rest);
 
-    this.credential = new AuthCredential({ clientId, clientSecret });
+    this.credential = credential;
+    this.client = new Dingtalk({ credential });
   }
 
   override async roomRawPayload(roomId: string): Promise<DTRoomRawPayload> {
@@ -126,35 +137,6 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     return dtMessageToWechaty(this, rawPayload);
   }
 
-  /**
-   * hack 解决 wechaty 发送消息不会传消息 ID 的问题
-   *
-   * @param messageId - 消息 ID
-   * @param sayable - 消息内容
-   * @returns
-   */
-  async unstable__send(messageId: string, sayable: Sayable): Promise<void> {
-    const payload = this.messages.get(messageId);
-    if (!payload) return;
-
-    const sayer = new SayableSayer(payload.sessionWebhook, payload.sessionWebhookExpiredTime);
-
-    // TODO 群聊提及好像有 BUG
-    await sayer.say(sayable);
-  }
-
-  protected async unstable__say(conversationId: string, sayable: Sayable, mentionIdList?: string[]): Promise<void> {
-    const contacts = this.contacts;
-    const rooms = this.rooms;
-
-    const payload = contacts.get(conversationId) || rooms.get(conversationId);
-    if (!payload) return;
-
-    const sayer = new SayableSayer(payload.sessionWebhook, payload.sessionWebhookExpiredTime);
-
-    await sayer.say(sayable, mentionIdList || []);
-  }
-
   override messageSendText(
     conversationId: string, // TODO 群或联系人ID?
     content: string,
@@ -181,6 +163,30 @@ export class PuppetDingTalk extends PUPPET.Puppet {
         picUrl: urlLinkPayload.thumbnailUrl || '',
       },
     });
+  }
+
+  override async messageImage(messageId: string, imageType: PUPPET.types.Image): Promise<FileBoxInterface> {
+    log.verbose('PuppetDingTalk', 'messageImage(%s, %s[%s])', messageId, imageType, PUPPET.types.Image[imageType]);
+
+    const payload = await this.messageRawPayload(messageId);
+
+    return this.unstable_downloadFile(payload.robotCode, (payload as DTMediaMessageRawPayload).content.downloadCode);
+  }
+
+  override async messageFile(messageId: string): Promise<FileBoxInterface> {
+    log.verbose('PuppetDingTalk', 'messageFile(%s)', messageId);
+
+    const payload = await this.messageRawPayload(messageId);
+
+    switch (payload.msgtype) {
+      case DTMessageType.File:
+      case DTMessageType.Video:
+      case DTMessageType.Audio:
+      case DTMessageType.Image:
+        return this.unstable_downloadFile(payload.robotCode, payload.content.downloadCode);
+      default:
+        throw new Error(`unknown msgtype: ${payload.msgtype}`);
+    }
   }
 
   override async onStart(): Promise<void> {
@@ -276,5 +282,27 @@ export class PuppetDingTalk extends PUPPET.Puppet {
       this.connection.close(true, true);
       this.connection = undefined;
     }
+  }
+
+  private async unstable_downloadFile(
+    robotCode: string,
+    downloadCode: string,
+    name?: string,
+  ): Promise<FileBoxInterface> {
+    const msg = await this.client.robots.messages.files.retrieve(robotCode, downloadCode);
+
+    return FileBox.fromUrl(msg.downloadUrl, { name });
+  }
+
+  private async unstable__say(conversationId: string, sayable: Sayable, mentionIdList?: string[]): Promise<void> {
+    const contacts = this.contacts;
+    const rooms = this.rooms;
+
+    const payload = contacts.get(conversationId) || rooms.get(conversationId);
+    if (!payload) return;
+
+    const sayer = new SayableSayer(payload.sessionWebhook, payload.sessionWebhookExpiredTime);
+
+    await sayer.say(sayable, mentionIdList || []);
   }
 }
