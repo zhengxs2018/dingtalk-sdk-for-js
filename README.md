@@ -61,7 +61,7 @@ $ npm i -S @zhengxs/wechaty-puppet-dingtalk
 $ yarn add @zhengxs/wechaty-puppet-dingtalk
 
 # With PNPM
-$ pnpm install @zhengxs/wechaty-puppet-dingtalk
+$ pnpm add @zhengxs/wechaty-puppet-dingtalk
 ```
 
 <div align="right">
