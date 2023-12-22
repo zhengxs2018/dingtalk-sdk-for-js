@@ -23,6 +23,8 @@ export type DingtalkOptions = IdentityClientOptions<AuthCredential>;
 export class Dingtalk extends IdentityClient<AuthCredential> {
   robots = new API.Robots(this);
 
+  files: API.Files = new API.Files(this);
+
   static Dingtalk = this;
 
   static DingtalkError = DingtalkError;
@@ -58,6 +60,7 @@ export {
 
 export namespace Dingtalk {
   export type Robots = API.Robots;
+  export type Files = API.Files;
 }
 
 export default Dingtalk;

@@ -1,6 +1,6 @@
 {
   "name": "@zhengxs/dingtalk",
-  "version": "0.0.1-beta.0",
+  "version": "0.0.1-beta.1",
   "description": "",
   "keywords": [
     "dingtalk"
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@zhengxs/dingtalk-auth": "workspace:^",
-    "@zhengxs/http": "^0.0.1-rc.3"
+    "@zhengxs/http": "^0.0.1-rc.5"
   },
   "publishConfig": {
     "access": "public",
