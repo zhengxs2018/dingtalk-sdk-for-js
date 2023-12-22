@@ -1,4 +1,6 @@
-export type DTContactRawPayload = {
+import { type DTSessionWebhookRawPayload } from './webhook';
+
+export interface DTContactRawPayload extends DTSessionWebhookRawPayload {
   /**
    * 发送者的用户ID
    *
@@ -17,7 +19,4 @@ export type DTContactRawPayload = {
    * 发送者昵称
    */
   name: string;
-  // hack 解决 wechaty 发送消息不会传消息 ID 的问题
-  sessionWebhook: string;
-  sessionWebhookExpiredTime: number;
-};
+}

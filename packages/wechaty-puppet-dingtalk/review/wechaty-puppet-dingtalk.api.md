@@ -59,14 +59,12 @@ export interface DTAudioMessageRawPayload extends DTMessageRawPayloadBase {
 }
 
 // @public (undocumented)
-export type DTContactRawPayload = {
-  staffId?: string;
+export interface DTContactRawPayload extends DTSessionWebhookRawPayload {
   corpId: string;
   id: string;
   name: string;
-  sessionWebhook: string;
-  sessionWebhookExpiredTime: number;
-};
+  staffId?: string;
+}
 
 // @public (undocumented)
 export function dtContactToWechaty(_: PUPPET.Puppet, payload: DTContactRawPayload): Promise<PUPPET.payloads.Contact>;
@@ -188,16 +186,25 @@ export interface DTRichTextMessageRawPayload extends DTMessageRawPayloadBase {
 export function dtRoomMemberToWechaty(rawPayload: DTContactRawPayload): PUPPET.payloads.RoomMember;
 
 // @public (undocumented)
-export type DTRoomRawPayload = {
+export interface DTRoomRawPayload extends DTSessionWebhookRawPayload {
+  // (undocumented)
   conversationId: string;
+  // (undocumented)
   conversationTitle?: string;
+  // (undocumented)
   memberList: DTContactRawPayload[];
-  sessionWebhook: string;
-  sessionWebhookExpiredTime: number;
-};
+}
 
 // @public (undocumented)
 export function dtRoomToWechaty(_: PUPPET.Puppet, payload: DTRoomRawPayload): Promise<PUPPET.payloads.Room>;
+
+// @public (undocumented)
+export interface DTSessionWebhookRawPayload {
+  // (undocumented)
+  sessionWebhook: string;
+  // (undocumented)
+  sessionWebhookExpiredTime: number;
+}
 
 // @public (undocumented)
 export interface DTTextMessageRawPayload extends DTMessageRawPayloadBase {
@@ -346,6 +353,8 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   // (undocumented)
   protected messages: Map<string, DTMessageRawPayload>;
   // (undocumented)
+  messageSendFile(conversationId: string, fileBox: FileBoxInterface): Promise<void>;
+  // (undocumented)
   messageSendText(
     conversationId: string, // TODO 群或联系人ID?
     content: string,
@@ -435,7 +444,7 @@ export type VideoMessagePayload = {
   video: {
     picMediaId: string;
     videoMediaId: string;
-    videoType: number;
+    videoType: string;
     duration: string;
     width?: string;
     height?: string;

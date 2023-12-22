@@ -19,7 +19,8 @@
     "@zhengxs/dingtalk-auth": "workspace:^",
     "@zhengxs/dingtalk-event-hubs": "workspace:^",
     "@zhengxs/wechaty-dingtalk-message": "workspace:^",
-    "@zhengxs/wechaty-puppet-dingtalk": "workspace:^"
+    "@zhengxs/wechaty-puppet-dingtalk": "workspace:^",
+    "file-box": "^1.4.15"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.38.3",

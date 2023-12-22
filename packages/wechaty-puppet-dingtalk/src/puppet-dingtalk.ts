@@ -1,6 +1,9 @@
+import { extname } from 'node:path';
+
 import { Dingtalk } from '@zhengxs/dingtalk';
 import { AuthCredential } from '@zhengxs/dingtalk-auth';
 import { type HubConnection, HubConnectionBuilder } from '@zhengxs/dingtalk-event-hubs';
+import { toFile } from '@zhengxs/http';
 import { FileBox, type FileBoxInterface } from 'file-box';
 import { GError } from 'gerror';
 import * as PUPPET from 'wechaty-puppet';
@@ -24,6 +27,11 @@ export interface PuppetDingTalkOptions extends PUPPET.PuppetOptions {
   clientSecret?: string;
   credential?: AuthCredential;
 }
+
+const AttachmentExtRE = /\.(doc|docx|xls|xlsx|ppt|pptx|zip|pdf|rar)$/i;
+const AudioExtRE = /\.(mp3|wav|wma|ogg|aac|flac)$/i;
+const VideoExtRE = /\.(mp4|mov|avi|rmvb|mkv|flv|rm|asf|3gp|wmv|mpeg|dat|mpg|ts|mts|vob)$/i;
+const ImageExtRE = /\.(jpg|jpeg|png|gif|bmp|webp)$/i;
 
 export class PuppetDingTalk extends PUPPET.Puppet {
   protected client: Dingtalk;
@@ -165,6 +173,50 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     });
   }
 
+  override async messageSendFile(conversationId: string, fileBox: FileBoxInterface): Promise<void> {
+    log.verbose('PuppetDingTalk', 'messageSendFile(%s, %s)', conversationId, fileBox);
+
+    const ext = extname(fileBox.name);
+
+    const files = this.client.files;
+
+    // TODO 图片需要远程地址？
+    switch (true) {
+      case AttachmentExtRE.test(ext): {
+        const fileObj = await files.create({
+          type: 'file',
+          media: await toFile(fileBox.toStream(), fileBox.name),
+        });
+
+        await this.unstable__say(conversationId, {
+          msgtype: 'file',
+          file: {
+            mediaId: fileObj.media_id,
+            fileName: fileBox.name,
+            fileType: ext.slice(1),
+          },
+        });
+        break;
+      }
+
+      case AudioExtRE.test(ext): {
+        throw new Error(`暂不支持语音文件的发送`);
+      }
+
+      case VideoExtRE.test(ext): {
+        throw new Error(`暂不支持视频文件的发送`);
+      }
+
+      case ImageExtRE.test(ext): {
+        throw new Error(`暂不支持图片的发送`);
+        break;
+      }
+
+      default:
+        throw new Error(`unknown file type: ${fileBox.name}`);
+    }
+  }
+
   override async messageImage(messageId: string, imageType: PUPPET.types.Image): Promise<FileBoxInterface> {
     log.verbose('PuppetDingTalk', 'messageImage(%s, %s[%s])', messageId, imageType, PUPPET.types.Image[imageType]);
 
@@ -295,13 +347,13 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   }
 
   private async unstable__say(conversationId: string, sayable: Sayable, mentionIdList?: string[]): Promise<void> {
-    const contacts = this.contacts;
-    const rooms = this.rooms;
+    const webhook = this.contacts.get(conversationId) || this.rooms.get(conversationId);
 
-    const payload = contacts.get(conversationId) || rooms.get(conversationId);
-    if (!payload) return;
+    if (!webhook) {
+      throw new Error(`Webhook ${conversationId} not found`);
+    }
 
-    const sayer = new SayableSayer(payload.sessionWebhook, payload.sessionWebhookExpiredTime);
+    const sayer = new SayableSayer(webhook.sessionWebhook, webhook.sessionWebhookExpiredTime);
 
     await sayer.say(sayable, mentionIdList || []);
   }

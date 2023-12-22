@@ -65,16 +65,21 @@ export type VideoMessagePayload = {
      * 通过上传媒体文件接口得到的 mediaId
      */
     picMediaId: string;
+
     /**
      * 视频媒体文件ID
      *
      * 通过上传媒体文件接口得到的 mediaId
      */
     videoMediaId: string;
+
     /**
      * 视频类型，支持mp4格式。
+     *
+     * 如：mp4
      */
-    videoType: number;
+    videoType: string;
+
     /**
      * 视频时长，单位：秒
      */
