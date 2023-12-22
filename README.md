@@ -15,7 +15,7 @@
 [![][github-license-shield]][github-license-link]
 [![][wechaty-poweredby-shield]][wechaty-website-link]
 
-[Report Bug][github-issues-link] · [Request Feature][github-issues-link]
+🔥 [Github Wiki][github-wiki-link] · 👾 [Report Bug][github-issues-link] · 🌈 [Request Feature][github-issues-link]
 
 ![](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -25,7 +25,7 @@
 > 钉钉官方有自己的 [Stream SDk][dingtalk-node-link]，如需更多钉钉功能支持，请关注此项目。
 
 > [!WARNING]
-> 项目正在开发中，如需在生产中使用，请避免调用 **DingTalkPuppet** 方法。
+> 项目正在开发中，并且只支持 `Node.js >= 18` 的版本。
 
 <details>
 <summary><kbd>目录树</kbd></summary>
@@ -34,7 +34,6 @@
 
 - [✨ 功能特性](#-功能特性)
 - [📦 安装](#-安装)
-- [📖 使用文档](#-使用文档)
 - [⌨️ 本地开发](#-本地开发)
 - [🔗 更多工具](#-更多工具)
 - [🤝 参与贡献](#-参与贡献)
@@ -98,16 +97,6 @@ bot.on('message', async msg => {
 
 bot.start();
 ```
-
-## 📖 使用文档
-
-在 [Wiki](https://github.com/zhengxs2018/dingtalk-sdk-for-js/wiki) 上阅读完整文档。
-
-<div align="right">
-
-[![][back-to-top]](#readme-top)
-
-</div>
 
 ## ⌨️ 本地开发
 
@@ -184,6 +173,7 @@ This project is [MIT](./LICENSE) licensed.
 [github-issues-link]: https://github.com/zhengxs2018/dingtalk-sdk-for-js/issues
 [pr-welcome-shield]: https://img.shields.io/badge/%F0%9F%A4%AF%20PR%20WELCOME-%E2%86%92-ffcb47?labelColor=black&style=for-the-badge
 [pr-welcome-link]: https://github.com/zhengxs2018/dingtalk-sdk-for-js/pulls
+[github-wiki-link]: https://github.com/zhengxs2018/dingtalk-sdk-for-js/wiki
 [github-contrib-shield]: https://contrib.rocks/image?repo=zhengxs2018%2Fdingtalk-sdk-for-js
 [github-contrib-link]: https://github.com/zhengxs2018/dingtalk-sdk-for-js/graphs/contributors
 [github-codespace-shield]: https://github.com/codespaces/badge.svg
