@@ -1,0 +1,50 @@
+{
+  "name": "@zhengxs/dingtalk",
+  "version": "0.0.1-beta.0",
+  "description": "",
+  "keywords": [
+    "dingtalk"
+  ],
+  "sideEffect": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist-types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist-types/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "dist-types",
+    "src"
+  ],
+  "scripts": {
+    "build": "pnpm clean && vite build && pnpm extract-api",
+    "watch": "vite build --watch",
+    "clean": "trash dist dist-types temp",
+    "extract-api": "mkdirp ./review && api-extractor run --local"
+  },
+  "dependencies": {
+    "@zhengxs/dingtalk-auth": "workspace:^",
+    "@zhengxs/http": "^0.0.1-rc.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "homepage": "https://github.com/zhengxs2018/dingtalk-sdk-for-js#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhengxs2018/dingtalk-sdk-for-js",
+    "directory": "packages/dingtalk"
+  },
+  "bugs": {
+    "url": "https://github.com/zhengxs2018/dingtalk-sdk-for-js/issues"
+  },
+  "author": "zhengxs <zhengxs2018@gmail.com>",
+  "license": "MIT"
+}
