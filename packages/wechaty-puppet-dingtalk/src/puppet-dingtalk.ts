@@ -65,7 +65,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
 
     const rawPayload = await this.roomRawPayload(roomId);
 
-    const memberIdList = rawPayload.memberList.map(member => member.senderId);
+    const memberIdList = rawPayload.memberList.map(member => member.id);
 
     return memberIdList;
   }
@@ -75,7 +75,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     const rawPayload = await this.roomRawPayload(roomId);
 
     const memberPayloadList = rawPayload.memberList || [];
-    const memberPayloadResult = memberPayloadList.find(payload => payload.senderId === contactId);
+    const memberPayloadResult = memberPayloadList.find(payload => payload.id === contactId);
 
     if (memberPayloadResult) {
       return memberPayloadResult;
@@ -196,40 +196,35 @@ export class PuppetDingTalk extends PUPPET.Puppet {
       const payload: DTMessageRawPayload = JSON.parse(event.data);
 
       const { sessionWebhook, sessionWebhookExpiredTime } = payload;
-      const { chatbotUserId, robotCode, chatbotCorpId } = payload;
 
-      const chatbotUser = {
-        senderNick: `🤖️ 默认`,
-        senderId: chatbotUserId,
-        senderStaffId: robotCode,
-        senderCorpId: chatbotCorpId,
-        isAdmin: false,
+      const chatbotUser: DTContactRawPayload = {
+        id: payload.chatbotUserId,
+        corpId: payload.chatbotCorpId,
+        staffId: payload.robotCode,
+        name: `🤖️ 默认`,
         // hack 解决 wechaty 发送消息不会传消息 ID 的问题
         sessionWebhook,
         sessionWebhookExpiredTime,
       };
 
-      contacts.set(chatbotUserId, chatbotUser);
+      contacts.set(chatbotUser.id, chatbotUser);
 
       // TODO 这么提前获取机器人的信息
       if (!this.isLoggedIn) {
-        await this.login(payload.chatbotUserId);
+        await this.login(chatbotUser.id);
       }
 
-      const { senderCorpId, senderId, senderNick, senderStaffId, isAdmin } = payload;
-
-      const sender = {
-        senderCorpId,
-        senderId,
-        senderNick,
-        senderStaffId,
-        isAdmin,
+      const senderUser: DTContactRawPayload = {
+        corpId: payload.senderCorpId,
+        id: payload.senderId,
+        name: payload.senderNick,
+        staffId: payload.senderStaffId,
         // hack 解决 wechaty 发送消息不会传消息 ID 的问题
         sessionWebhook,
         sessionWebhookExpiredTime,
       };
 
-      contacts.set(senderId, sender);
+      contacts.set(senderUser.id, senderUser);
 
       if (payload.conversationType === '2') {
         const { conversationId, conversationTitle } = payload;
@@ -242,7 +237,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
           sessionWebhookExpiredTime,
 
           // TODO 临时方案，解决钉钉群成员列表获取不到的问题
-          memberList: [chatbotUser, sender],
+          memberList: [chatbotUser, senderUser],
         });
       }
 
