@@ -13,11 +13,7 @@ export type ConnectionParamsOptions = {
 };
 
 // @public (undocumented)
-export function createHttpLink({
-  client,
-  credential,
-  ...rest
-}: Required<HttpLinkOptions>): Promise<string>;
+export function createHttpLink({ client, credential, ...rest }: Required<HttpLinkOptions>): Promise<string>;
 
 // @public (undocumented)
 export type EffectCleanup = () => void;
@@ -60,15 +56,9 @@ export interface HttpLinkOptions extends ConnectionParamsOptions {
 
 // @public (undocumented)
 export class HubConnection {
-  constructor(
-    options: HubConnectionOptions,
-    webSocketImpl?: typeof globalThis.WebSocket,
-  );
+  constructor(options: HubConnectionOptions, webSocketImpl?: typeof globalThis.WebSocket);
   // (undocumented)
-  protected buildMessage(
-    id: string,
-    payload: NonNullable<unknown>,
-  ): SendMessage;
+  protected buildMessage(id: string, payload: NonNullable<unknown>): SendMessage;
   // (undocumented)
   close(isForced?: boolean, closedByUser?: boolean): void;
   // (undocumented)
@@ -78,10 +68,7 @@ export class HubConnection {
   protected httpLink?: HttpLink;
   invoke(id: string, data: unknown): void;
   // (undocumented)
-  on(
-    eventName: string | symbol,
-    listener: (...args: any[]) => void,
-  ): () => void;
+  on(eventName: string | symbol, listener: (...args: any[]) => void): () => void;
   // (undocumented)
   protected processCallbacks(event: ParsedEvent): void;
   // (undocumented)
@@ -106,15 +93,9 @@ export class HubConnectionBuilder {
   // (undocumented)
   protected url?: string;
   // (undocumented)
-  withClient(
-    client: IdentityClient<AuthCredential>,
-    options?: ConnectionParamsOptions,
-  ): HubConnectionBuilder;
+  withClient(client: IdentityClient<AuthCredential>, options?: ConnectionParamsOptions): HubConnectionBuilder;
   // (undocumented)
-  withCredential(
-    credential: AuthCredential,
-    options?: ConnectionParamsOptions,
-  ): HubConnectionBuilder;
+  withCredential(credential: AuthCredential, options?: ConnectionParamsOptions): HubConnectionBuilder;
   // (undocumented)
   withUrl(url: string): HubConnectionBuilder;
 }

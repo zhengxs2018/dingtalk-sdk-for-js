@@ -4,12 +4,7 @@ import Backoff from 'backo2';
 
 import { EventEmitter, WebSocket as NativeWebSocket } from './_shims/registry';
 import type { HttpLink } from './HttpLink';
-import type {
-  EffectCleanup,
-  GraphAPIResponse,
-  ParsedEvent,
-  SendMessage,
-} from './types';
+import type { EffectCleanup, GraphAPIResponse, ParsedEvent, SendMessage } from './types';
 
 const WS_TIMEOUT = 30000;
 
@@ -52,10 +47,7 @@ export class HubConnection {
 
   private effects: EffectCleanup[];
 
-  constructor(
-    options: HubConnectionOptions,
-    webSocketImpl?: typeof globalThis.WebSocket,
-  ) {
+  constructor(options: HubConnectionOptions, webSocketImpl?: typeof globalThis.WebSocket) {
     const {
       url,
       httpLink,
@@ -68,9 +60,7 @@ export class HubConnection {
 
     this.wsImpl = webSocketImpl || NativeWebSocket!;
     if (!this.wsImpl) {
-      throw new Error(
-        'Unable to find native implementation, or alternative implementation for WebSocket!',
-      );
+      throw new Error('Unable to find native implementation, or alternative implementation for WebSocket!');
     }
 
     this.url = url;
@@ -127,16 +117,8 @@ export class HubConnection {
       listener: (ev: WebSocketEventMap[K]) => any,
       options?: boolean | AddEventListenerOptions,
     ): EffectCleanup;
-    function on(
-      type: string,
-      listener: EventListener,
-      options?: boolean | AddEventListenerOptions,
-    ): EffectCleanup;
-    function on(
-      type: string,
-      listener: EventListener,
-      options?: boolean | AddEventListenerOptions,
-    ): EffectCleanup {
+    function on(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions): EffectCleanup;
+    function on(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions): EffectCleanup {
       ws.addEventListener(type, listener, options);
 
       const off = () => ws.removeEventListener(type, listener, options);
@@ -219,10 +201,7 @@ export class HubConnection {
         break;
 
       case 'REGISTERED': {
-        this.emitter.emit(
-          this.reconnecting ? 'reconnected' : 'connected',
-          event,
-        );
+        this.emitter.emit(this.reconnecting ? 'reconnected' : 'connected', event);
         this.reconnecting = false;
         this.backoff.reset();
         this.maxConnectTimeGenerator.reset();
@@ -344,10 +323,7 @@ export class HubConnection {
     }
   }
 
-  protected buildMessage(
-    id: string,
-    payload: NonNullable<unknown>,
-  ): SendMessage {
+  protected buildMessage(id: string, payload: NonNullable<unknown>): SendMessage {
     return {
       code: 200,
       message: 'OK',
@@ -380,10 +356,7 @@ export class HubConnection {
       this.checkConnection();
     }
 
-    this.checkConnectionIntervalId = setInterval(
-      this.checkConnection.bind(this),
-      this.wsTimeout,
-    );
+    this.checkConnectionIntervalId = setInterval(this.checkConnection.bind(this), this.wsTimeout);
   }
 
   private tryReconnect() {
@@ -397,10 +370,7 @@ export class HubConnection {
 
     this.clearTryReconnectTimeout();
 
-    this.tryReconnectTimeoutId = setTimeout(
-      () => this.connect(),
-      this.backoff.duration(),
-    );
+    this.tryReconnectTimeoutId = setTimeout(() => this.connect(), this.backoff.duration());
   }
 
   private checkConnection() {

@@ -20,8 +20,7 @@ export class AuthCredential extends TokenSessionCredential<AuthGetTokenParams | 
   }
 
   protected request(params?: AuthGetTokenParams): Promise<TokenResponse> {
-    const { clientId = this.clientId, clientSecret = this.clientSecret } =
-      params || {};
+    const { clientId = this.clientId, clientSecret = this.clientSecret } = params || {};
 
     const client = this.getClient();
     return client.simple('/oauth2/accessToken', {

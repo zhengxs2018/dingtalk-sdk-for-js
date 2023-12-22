@@ -1,16 +1,10 @@
 import { IdentityClient } from '../IdentityClient';
-import type {
-  GetTokenParams,
-  TokenCredential,
-  TokenResponse,
-} from './TokenCredential';
+import type { GetTokenParams, TokenCredential, TokenResponse } from './TokenCredential';
 
 /**
  * 获取微应用后台免登的授权凭证
  */
-export abstract class BaseTokenCredential<Params = GetTokenParams>
-  implements TokenCredential<Params>
-{
+export abstract class BaseTokenCredential<Params = GetTokenParams> implements TokenCredential<Params> {
   protected client!: IdentityClient;
 
   getClient() {
@@ -34,9 +28,7 @@ export abstract class BaseTokenCredential<Params = GetTokenParams>
   abstract getToken(params: Params): Promise<TokenResponse>;
 }
 
-export abstract class TokenSessionCredential<
-  Params = GetTokenParams,
-> extends BaseTokenCredential<Params> {
+export abstract class TokenSessionCredential<Params = GetTokenParams> extends BaseTokenCredential<Params> {
   protected token?: TokenResponse;
   protected expiredAt?: number;
   protected promise?: Promise<TokenResponse>;

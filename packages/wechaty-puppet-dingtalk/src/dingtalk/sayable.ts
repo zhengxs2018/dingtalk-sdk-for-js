@@ -1,9 +1,4 @@
-import {
-  type MarkdownMessagePayload,
-  type MessagePayload,
-  MessageType,
-  type TextMessagePayload,
-} from './payloads';
+import { type MarkdownMessagePayload, type MessagePayload, MessageType, type TextMessagePayload } from './payloads';
 import { Sender } from './sender';
 
 export type Sayable = string | MessagePayload;
@@ -22,10 +17,7 @@ export class SayableSayer extends Sender {
     return this.send(message);
   }
 
-  protected mention(
-    message: MessagePayload,
-    mentionIdList: true | string[],
-  ): void {
+  protected mention(message: MessagePayload, mentionIdList: true | string[]): void {
     switch (message.msgtype) {
       case MessageType.Text:
       case MessageType.Markdown:
@@ -38,10 +30,7 @@ export class SayableSayer extends Sender {
     }
   }
 
-  protected atUserIds(
-    message: MarkdownMessagePayload | TextMessagePayload,
-    mentionIdList: string[],
-  ): void {
+  protected atUserIds(message: MarkdownMessagePayload | TextMessagePayload, mentionIdList: string[]): void {
     const mentionText = mentionIdList.map(id => `@${id}`).join(' ');
 
     message.at = {

@@ -18,15 +18,12 @@ import { assertErrCodeOfZero } from './util';
  */
 const BASE_URL = 'https://api.dingtalk.com/v1.0' as const;
 
-export interface IdentityClientOptions<
-  Credential extends TokenCredential = TokenCredential,
-> extends Partial<APIClientOptions> {
+export interface IdentityClientOptions<Credential extends TokenCredential = TokenCredential>
+  extends Partial<APIClientOptions> {
   credential?: Credential;
 }
 
-export class IdentityClient<
-  Credential extends TokenCredential = TokenCredential,
-> extends APIClient {
+export class IdentityClient<Credential extends TokenCredential = TokenCredential> extends APIClient {
   private credential?: Credential;
 
   constructor(options?: IdentityClientOptions<Credential>) {
@@ -76,18 +73,10 @@ export class IdentityClient<
   }
 }
 
-export async function dingtalkParseResponse<T>(
-  props: APIResponseProps,
-): Promise<T> {
+export async function dingtalkParseResponse<T>(props: APIResponseProps): Promise<T> {
   const { response } = props;
   if (props.options.stream) {
-    debug(
-      'response',
-      response.status,
-      response.url,
-      response.headers,
-      response.body,
-    );
+    debug('response', response.status, response.url, response.headers, response.body);
 
     // Note: there is an invariant here that isn't represented in the type system
     // that if you set `stream: true` the response type must also be `Stream<T>`

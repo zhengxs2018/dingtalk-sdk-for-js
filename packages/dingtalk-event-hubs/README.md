@@ -19,9 +19,7 @@ async function main() {
     clientSecret: process.env.DINGTALK_CLIENT_SECRET,
   });
 
-  const connection = new HubConnectionBuilder()
-    .withCredential(credential)
-    .build();
+  const connection = new HubConnectionBuilder().withCredential(credential).build();
 
   connection.on('message', function (payload) {
     console.log(data);

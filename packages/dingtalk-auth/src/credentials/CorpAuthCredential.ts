@@ -23,9 +23,7 @@ export class CorpAuthCredential extends TokenSessionCredential<CorpAuthGetTokenP
     this.suiteTicket = suiteTicket;
   }
 
-  protected override request(
-    params: CorpAuthGetTokenParams,
-  ): Promise<TokenResponse> {
+  protected override request(params: CorpAuthGetTokenParams): Promise<TokenResponse> {
     const {
       suiteKey = this.suiteKey,
       suiteSecret = this.suiteSecret,

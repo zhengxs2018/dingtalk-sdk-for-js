@@ -47,17 +47,9 @@ export class UserAuthCredential extends BaseTokenCredential<UserGetTokenParams> 
   }
 
   getToken(params: UserGetTokenParamsWithCode): Promise<UserTokenResponse>;
-  getToken(
-    params: UserGetTokenParamsWithRefreshToken,
-  ): Promise<UserTokenResponse>;
+  getToken(params: UserGetTokenParamsWithRefreshToken): Promise<UserTokenResponse>;
   getToken(params: UserGetTokenParams): Promise<UserTokenResponse> {
-    const {
-      clientId = this.clientId,
-      clientSecret = this.clientSecret,
-      refreshToken,
-      code,
-      grantType,
-    } = params;
+    const { clientId = this.clientId, clientSecret = this.clientSecret, refreshToken, code, grantType } = params;
 
     const body: UserGetTokenParamsBase = {
       clientId,
@@ -98,9 +90,7 @@ export interface UserTokenResponse extends TokenResponse {
   refreshToken: string;
 }
 
-export interface UserGetTokenParamsBase
-  extends UserAuthCredentialOptions,
-    GetTokenParams {
+export interface UserGetTokenParamsBase extends UserAuthCredentialOptions, GetTokenParams {
   /**
    * 临时授权码
    *
@@ -129,12 +119,9 @@ export interface UserGetTokenParamsWithCode extends UserGetTokenParamsBase {
   grantType?: 'authorization_code';
 }
 
-export interface UserGetTokenParamsWithRefreshToken
-  extends UserGetTokenParamsBase {
+export interface UserGetTokenParamsWithRefreshToken extends UserGetTokenParamsBase {
   refreshToken: string;
   grantType?: 'refresh_token';
 }
 
-export type UserGetTokenParams =
-  | UserGetTokenParamsWithCode
-  | UserGetTokenParamsWithRefreshToken;
+export type UserGetTokenParams = UserGetTokenParamsWithCode | UserGetTokenParamsWithRefreshToken;

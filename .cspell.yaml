@@ -17,6 +17,7 @@ words:
   - agentkeepalive
   - backo
   - baiducloud
+  - btns
   - corpid
   - dingtalk
   - dingtalker
@@ -26,6 +27,7 @@ words:
   - fieldname
   - gerror
   - idempotency
+  - impls
   - jiti
   - keyv
   - msgtype
@@ -35,6 +37,7 @@ words:
   - trivago
   - unawaited
   - wechat
+  - wechatified
   - wechaty
   - yiyan
 ignoreWords:

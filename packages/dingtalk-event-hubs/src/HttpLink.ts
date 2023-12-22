@@ -57,30 +57,23 @@ export class HttpLink {
   }
 }
 
-export async function createHttpLink({
-  client,
-  credential,
-  ...rest
-}: Required<HttpLinkOptions>): Promise<string> {
+export async function createHttpLink({ client, credential, ...rest }: Required<HttpLinkOptions>): Promise<string> {
   const token = await credential.getToken();
 
-  const json: Record<string, string> = await client.simple(
-    '/gateway/connections/open',
-    {
-      method: 'post',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'access-token': token.accessToken,
-      },
-      body: {
-        ...defaultConnectionParams,
-        clientId: credential!.clientId,
-        clientSecret: credential!.clientSecret,
-        rest,
-      },
+  const json: Record<string, string> = await client.simple('/gateway/connections/open', {
+    method: 'post',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'access-token': token.accessToken,
     },
-  );
+    body: {
+      ...defaultConnectionParams,
+      clientId: credential!.clientId,
+      clientSecret: credential!.clientSecret,
+      rest,
+    },
+  });
 
   return `${json.endpoint}?ticket=${json.ticket}`;
 }

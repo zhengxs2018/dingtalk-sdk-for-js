@@ -44,5 +44,6 @@ export interface TokenCredential<Params = GetTokenParams | void> {
   getTokenValue(params: Params): Promise<string>;
 }
 
-export type ExtractGetTokenParams<Credential> =
-  Credential extends TokenCredential<infer Params> ? Params : GetTokenParams;
+export type ExtractGetTokenParams<Credential> = Credential extends TokenCredential<infer Params>
+  ? Params
+  : GetTokenParams;

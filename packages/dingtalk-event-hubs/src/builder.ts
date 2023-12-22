@@ -13,18 +13,12 @@ export class HubConnectionBuilder {
     return this;
   }
 
-  withCredential(
-    credential: AuthCredential,
-    options?: ConnectionParamsOptions,
-  ): HubConnectionBuilder {
+  withCredential(credential: AuthCredential, options?: ConnectionParamsOptions): HubConnectionBuilder {
     this.httpLink = new HttpLink({ credential, ...options });
     return this;
   }
 
-  withClient(
-    client: IdentityClient<AuthCredential>,
-    options?: ConnectionParamsOptions,
-  ): HubConnectionBuilder {
+  withClient(client: IdentityClient<AuthCredential>, options?: ConnectionParamsOptions): HubConnectionBuilder {
     this.httpLink = new HttpLink({ client, ...options });
     return this;
   }

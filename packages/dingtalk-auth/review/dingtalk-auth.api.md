@@ -28,9 +28,7 @@ export interface AuthGetTokenParams extends GetTokenParams {
 }
 
 // @public
-export abstract class BaseTokenCredential<Params = GetTokenParams>
-  implements TokenCredential<Params>
-{
+export abstract class BaseTokenCredential<Params = GetTokenParams> implements TokenCredential<Params> {
   // (undocumented)
   protected client: IdentityClient;
   // (undocumented)
@@ -70,16 +68,15 @@ export interface CorpAuthGetTokenParams extends GetTokenParams {
 export function dingtalkParseResponse<T>(props: APIResponseProps): Promise<T>;
 
 // @public (undocumented)
-export type ExtractGetTokenParams<Credential> =
-  Credential extends TokenCredential<infer Params> ? Params : GetTokenParams;
+export type ExtractGetTokenParams<Credential> = Credential extends TokenCredential<infer Params>
+  ? Params
+  : GetTokenParams;
 
 // @public (undocumented)
 export type GetTokenParams = NonNullable<unknown>;
 
 // @public (undocumented)
-export class IdentityClient<
-  Credential extends TokenCredential = TokenCredential,
-> extends APIClient {
+export class IdentityClient<Credential extends TokenCredential = TokenCredential> extends APIClient {
   constructor(options?: IdentityClientOptions<Credential>);
   // (undocumented)
   protected authHeaders(): Promise<Record<string, string>>;
@@ -99,9 +96,8 @@ export class IdentityClient<
 }
 
 // @public (undocumented)
-export interface IdentityClientOptions<
-  Credential extends TokenCredential = TokenCredential,
-> extends Partial<APIClientOptions> {
+export interface IdentityClientOptions<Credential extends TokenCredential = TokenCredential>
+  extends Partial<APIClientOptions> {
   // (undocumented)
   credential?: Credential;
 }
@@ -136,9 +132,7 @@ export interface TokenResponse {
 }
 
 // @public (undocumented)
-export abstract class TokenSessionCredential<
-  Params = GetTokenParams,
-> extends BaseTokenCredential<Params> {
+export abstract class TokenSessionCredential<Params = GetTokenParams> extends BaseTokenCredential<Params> {
   // (undocumented)
   protected expiredAt?: number;
   // (undocumented)
@@ -163,9 +157,7 @@ export class UserAuthCredential extends BaseTokenCredential<UserGetTokenParams> 
   // (undocumented)
   getToken(params: UserGetTokenParamsWithCode): Promise<UserTokenResponse>;
   // (undocumented)
-  getToken(
-    params: UserGetTokenParamsWithRefreshToken,
-  ): Promise<UserTokenResponse>;
+  getToken(params: UserGetTokenParamsWithRefreshToken): Promise<UserTokenResponse>;
   // (undocumented)
   refreshToken?: string;
 }
@@ -177,14 +169,10 @@ export interface UserAuthCredentialOptions {
 }
 
 // @public (undocumented)
-export type UserGetTokenParams =
-  | UserGetTokenParamsWithCode
-  | UserGetTokenParamsWithRefreshToken;
+export type UserGetTokenParams = UserGetTokenParamsWithCode | UserGetTokenParamsWithRefreshToken;
 
 // @public (undocumented)
-export interface UserGetTokenParamsBase
-  extends UserAuthCredentialOptions,
-    GetTokenParams {
+export interface UserGetTokenParamsBase extends UserAuthCredentialOptions, GetTokenParams {
   code?: string;
   grantType?: string;
   refreshToken?: string;
@@ -199,8 +187,7 @@ export interface UserGetTokenParamsWithCode extends UserGetTokenParamsBase {
 }
 
 // @public (undocumented)
-export interface UserGetTokenParamsWithRefreshToken
-  extends UserGetTokenParamsBase {
+export interface UserGetTokenParamsWithRefreshToken extends UserGetTokenParamsBase {
   // (undocumented)
   grantType?: 'refresh_token';
   // (undocumented)

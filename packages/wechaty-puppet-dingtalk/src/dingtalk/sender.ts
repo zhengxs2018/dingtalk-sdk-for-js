@@ -15,10 +15,7 @@ export class Sender {
   async send(message: MessagePayload): Promise<void> {
     // 忽略过期的 Webhook
     if (this.isExpired()) {
-      log.error(
-        'PuppetDingTalk',
-        'Sender.send() Webhook 过期，已忽略需要发送的消息',
-      );
+      log.error('PuppetDingTalk', 'Sender.send() Webhook 过期，已忽略需要发送的消息');
       return;
     }
 

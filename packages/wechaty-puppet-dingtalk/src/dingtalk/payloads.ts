@@ -99,7 +99,7 @@ export type FileMessagePayload = {
   };
 };
 
-export type SingleButtonActionCard = {
+export type SimpleActionCard = {
   /**
    * 首屏会话透出的展示内容
    */
@@ -134,7 +134,7 @@ export type ActionCardButtonStyle = {
   actionURL: string;
 };
 
-export type MultiButtonActionCard = {
+export type ActionCard = {
   /**
    * 首屏会话透出的展示内容
    */
@@ -149,7 +149,7 @@ export type MultiButtonActionCard = {
    * 0: 按钮竖直排列
    * 1: 按钮横向排列
    */
-  btnOrientation: ActionCardButtonOrientation;
+  btnOrientation: '0' | '1';
   /**
    * 按钮列表
    */
@@ -161,7 +161,7 @@ export type MultiButtonActionCard = {
  */
 export type ActionCardMessagePayload = {
   msgtype: 'actionCard';
-  actionCard: SingleButtonActionCard | MultiButtonActionCard;
+  actionCard: SimpleActionCard | ActionCard;
 };
 
 export type FeedLink = {
