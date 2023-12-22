@@ -1,8 +1,5 @@
 import { AuthCredential } from '@zhengxs/dingtalk-auth';
-import {
-  type HubConnection,
-  HubConnectionBuilder,
-} from '@zhengxs/dingtalk-event-hubs';
+import { type HubConnection, HubConnectionBuilder } from '@zhengxs/dingtalk-event-hubs';
 import { GError } from 'gerror';
 import * as PUPPET from 'wechaty-puppet';
 import { log } from 'wechaty-puppet';
@@ -16,6 +13,7 @@ import {
   dtRoomMemberToWechaty,
   type DTRoomRawPayload,
   dtRoomToWechaty,
+  type MessagePayload,
 } from './dingtalk';
 
 export interface PuppetDingTalkOptions extends PUPPET.PuppetOptions {
@@ -47,12 +45,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   override async roomRawPayload(roomId: string): Promise<DTRoomRawPayload> {
     const rooms = this.rooms;
 
-    log.verbose(
-      'PuppetDingTalk',
-      'contactRawPayload(%s) with rooms.length=%d',
-      roomId,
-      rooms.size,
-    );
+    log.verbose('PuppetDingTalk', 'contactRawPayload(%s) with rooms.length=%d', roomId, rooms.size);
 
     const rawPayload = rooms.get(roomId);
 
@@ -63,9 +56,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     return rawPayload;
   }
 
-  override async roomRawPayloadParser(
-    rawPayload: DTRoomRawPayload,
-  ): Promise<PUPPET.payloads.Room> {
+  override async roomRawPayloadParser(rawPayload: DTRoomRawPayload): Promise<PUPPET.payloads.Room> {
     return dtRoomToWechaty(this, rawPayload);
   }
 
@@ -79,22 +70,12 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     return memberIdList;
   }
 
-  override async roomMemberRawPayload(
-    roomId: string,
-    contactId: string,
-  ): Promise<DTContactRawPayload> {
-    log.verbose(
-      'PuppetDingTalk',
-      'roomMemberRawPayload(%s, %s)',
-      roomId,
-      contactId,
-    );
+  override async roomMemberRawPayload(roomId: string, contactId: string): Promise<DTContactRawPayload> {
+    log.verbose('PuppetDingTalk', 'roomMemberRawPayload(%s, %s)', roomId, contactId);
     const rawPayload = await this.roomRawPayload(roomId);
 
     const memberPayloadList = rawPayload.memberList || [];
-    const memberPayloadResult = memberPayloadList.find(
-      payload => payload.senderId === contactId,
-    );
+    const memberPayloadResult = memberPayloadList.find(payload => payload.senderId === contactId);
 
     if (memberPayloadResult) {
       return memberPayloadResult;
@@ -103,23 +84,14 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     }
   }
 
-  override async roomMemberRawPayloadParser(
-    rawPayload: DTContactRawPayload,
-  ): Promise<PUPPET.payloads.RoomMember> {
+  override async roomMemberRawPayloadParser(rawPayload: DTContactRawPayload): Promise<PUPPET.payloads.RoomMember> {
     return dtRoomMemberToWechaty(rawPayload);
   }
 
-  override async contactRawPayload(
-    contactId: string,
-  ): Promise<DTContactRawPayload> {
+  override async contactRawPayload(contactId: string): Promise<DTContactRawPayload> {
     const contacts = this.contacts;
 
-    log.verbose(
-      'PuppetDingTalk',
-      'contactRawPayload(%s) with contacts.length=%d',
-      contactId,
-      contacts.size,
-    );
+    log.verbose('PuppetDingTalk', 'contactRawPayload(%s) with contacts.length=%d', contactId, contacts.size);
 
     const rawPayload = contacts.get(contactId);
 
@@ -130,23 +102,14 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     return rawPayload;
   }
 
-  override async contactRawPayloadParser(
-    rawPayload: DTContactRawPayload,
-  ): Promise<PUPPET.payloads.Contact> {
+  override async contactRawPayloadParser(rawPayload: DTContactRawPayload): Promise<PUPPET.payloads.Contact> {
     return dtContactToWechaty(this, rawPayload);
   }
 
-  override async messageRawPayload(
-    messageId: string,
-  ): Promise<DTMessageRawPayload> {
+  override async messageRawPayload(messageId: string): Promise<DTMessageRawPayload> {
     const messages = this.messages;
 
-    log.verbose(
-      'PuppetDingTalk',
-      'messageRawPayload(%s) with messages.length=%d',
-      messageId,
-      messages.size,
-    );
+    log.verbose('PuppetDingTalk', 'messageRawPayload(%s) with messages.length=%d', messageId, messages.size);
 
     const rawPayload = messages.get(messageId);
 
@@ -157,15 +120,8 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     return rawPayload;
   }
 
-  override async messageRawPayloadParser(
-    rawPayload: DTMessageRawPayload,
-  ): Promise<PUPPET.payloads.Message> {
-    log.verbose(
-      'PuppetDingTalk',
-      'messageRawPayloadParser(%s) @ %s',
-      rawPayload,
-      this,
-    );
+  override async messageRawPayloadParser(rawPayload: DTMessageRawPayload): Promise<PUPPET.payloads.Message> {
+    log.verbose('PuppetDingTalk', 'messageRawPayloadParser(%s) @ %s', rawPayload, this);
 
     return dtMessageToWechaty(this, rawPayload);
   }
@@ -181,30 +137,20 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     const payload = this.messages.get(messageId);
     if (!payload) return;
 
-    const sayer = new SayableSayer(
-      payload.sessionWebhook,
-      payload.sessionWebhookExpiredTime,
-    );
+    const sayer = new SayableSayer(payload.sessionWebhook, payload.sessionWebhookExpiredTime);
 
     // TODO 群聊提及好像有 BUG
     await sayer.say(sayable);
   }
 
-  protected async say(
-    conversationId: string,
-    sayable: Sayable,
-    mentionIdList?: string[],
-  ): Promise<void> {
+  protected async unstable__say(conversationId: string, sayable: Sayable, mentionIdList?: string[]): Promise<void> {
     const contacts = this.contacts;
     const rooms = this.rooms;
 
     const payload = contacts.get(conversationId) || rooms.get(conversationId);
     if (!payload) return;
 
-    const sayer = new SayableSayer(
-      payload.sessionWebhook,
-      payload.sessionWebhookExpiredTime,
-    );
+    const sayer = new SayableSayer(payload.sessionWebhook, payload.sessionWebhookExpiredTime);
 
     await sayer.say(sayable, mentionIdList || []);
   }
@@ -214,28 +160,19 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     content: string,
     mentionIdList?: string[],
   ): Promise<void> {
-    log.verbose(
-      'PuppetDingTalk',
-      'messageSend(%s, %s)',
-      conversationId,
-      content,
-    );
+    log.verbose('PuppetDingTalk', 'messageSend(%s, %s)', conversationId, content);
 
-    return this.say(conversationId, content, mentionIdList || []);
+    return this.unstable__say(conversationId, content, mentionIdList || []);
   }
 
-  override messageSendUrl(
-    conversationId: string,
-    urlLinkPayload: PUPPET.payloads.UrlLink,
-  ) {
-    log.verbose(
-      'PuppetDingTalk',
-      'messageSendUrl(%s, %s)',
-      conversationId,
-      urlLinkPayload,
-    );
+  override async messageSendUrl(conversationId: string, urlLinkPayload: PUPPET.payloads.UrlLink | MessagePayload) {
+    log.verbose('PuppetDingTalk', 'messageSendUrl(%s, %s)', conversationId, urlLinkPayload);
 
-    return this.say(conversationId, {
+    if ('msgtype' in urlLinkPayload) {
+      return this.unstable__say(conversationId, urlLinkPayload);
+    }
+
+    return this.unstable__say(conversationId, {
       msgtype: 'link',
       link: {
         title: urlLinkPayload.title,
@@ -247,15 +184,9 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   }
 
   override async onStart(): Promise<void> {
-    log.verbose(
-      'PuppetDingTalk',
-      'onStart() with %s',
-      this.memory.name || 'NONAME',
-    );
+    log.verbose('PuppetDingTalk', 'onStart() with %s', this.memory.name || 'NONAME');
 
-    const connection = new HubConnectionBuilder()
-      .withCredential(this.credential)
-      .build();
+    const connection = new HubConnectionBuilder().withCredential(this.credential).build();
 
     const rooms = this.rooms;
     const contacts = this.contacts;
@@ -285,8 +216,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
         await this.login(payload.chatbotUserId);
       }
 
-      const { senderCorpId, senderId, senderNick, senderStaffId, isAdmin } =
-        payload;
+      const { senderCorpId, senderId, senderNick, senderStaffId, isAdmin } = payload;
 
       const sender = {
         senderCorpId,

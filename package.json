@@ -18,6 +18,7 @@
   "dependencies": {
     "@zhengxs/dingtalk-auth": "workspace:^",
     "@zhengxs/dingtalk-event-hubs": "workspace:^",
+    "@zhengxs/wechaty-dingtalk-message": "workspace:^",
     "@zhengxs/wechaty-puppet-dingtalk": "workspace:^"
   },
   "devDependencies": {

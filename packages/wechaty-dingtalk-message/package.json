@@ -1,6 +1,6 @@
 {
-  "name": "@zhengxs/wechaty-puppet-dingtalk",
-  "version": "0.0.1-beta.3",
+  "name": "@zhengxs/wechaty-dingtalk-message",
+  "version": "0.0.1-beta.0",
   "description": "",
   "sideEffect": false,
   "main": "./dist/index.cjs",
@@ -26,13 +26,8 @@
     "extract-api": "mkdirp ./review && api-extractor run --local"
   },
   "dependencies": {
-    "@zhengxs/dingtalk-auth": "workspace:^",
-    "@zhengxs/dingtalk-event-hubs": "workspace:^",
-    "agentkeepalive": "^4.5.0",
-    "form-data-encoder": "^4.0.2",
-    "gerror": "^1.0.16",
-    "wechaty-puppet": "^1.20.2",
-    "ws": "^8.15.1"
+    "@zhengxs/wechaty-puppet-dingtalk": "workspace:^",
+    "wechaty": "^1.20.2"
   },
   "publishConfig": {
     "access": "public",
@@ -42,7 +37,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/zhengxs2018/dingtalk-sdk-for-js",
-    "directory": "packages/wechaty-puppet-dingtalk"
+    "directory": "packages/wechaty-dingtalk-message"
   },
   "bugs": {
     "url": "https://github.com/zhengxs2018/dingtalk-sdk-for-js/issues"

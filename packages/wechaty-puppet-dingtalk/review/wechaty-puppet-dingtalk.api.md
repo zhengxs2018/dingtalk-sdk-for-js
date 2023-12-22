@@ -8,6 +8,303 @@ import { HubConnection } from '@zhengxs/dingtalk-event-hubs';
 import * as PUPPET from 'wechaty-puppet';
 
 // @public (undocumented)
+export type ActionCard = {
+  title: string;
+  text: string;
+  btnOrientation: '0' | '1';
+  btns: ActionCardButtonStyle[];
+};
+
+// @public (undocumented)
+export enum ActionCardButtonOrientation {
+  // (undocumented)
+  Horizontal = '1',
+  // (undocumented)
+  Vertical = '0',
+}
+
+// @public (undocumented)
+export type ActionCardButtonStyle = {
+  title: string;
+  actionURL: string;
+};
+
+// @public
+export type ActionCardMessagePayload = {
+  msgtype: 'actionCard';
+  actionCard: SimpleActionCard | ActionCard;
+};
+
+// @public (undocumented)
+export type AudioMessagePayload = {
+  msgtype: 'audio';
+  audio: {
+    mediaId: string;
+    duration: number;
+  };
+};
+
+// @public (undocumented)
+export interface DTAudioMessageRawPayload extends DTMessageRawPayloadBase {
+  // (undocumented)
+  content: {
+    duration: number;
+    downloadCode: string;
+    recognition: string;
+  };
+  // (undocumented)
+  msgtype: 'audio';
+}
+
+// @public (undocumented)
+export type DTContactRawPayload = {
+  senderId: string;
+  senderNick: string;
+  senderStaffId: string;
+  senderCorpId: string;
+  isAdmin: boolean;
+  sessionWebhook: string;
+  sessionWebhookExpiredTime: number;
+};
+
+// @public (undocumented)
+export function dtContactToWechaty(_: PUPPET.Puppet, payload: DTContactRawPayload): Promise<PUPPET.payloads.Contact>;
+
+// @public (undocumented)
+export interface DTFileMessageRawPayload extends DTMessageRawPayloadBase {
+  // (undocumented)
+  content: {
+    downloadCode: string;
+    fileName: string;
+  };
+  // (undocumented)
+  msgtype: 'file';
+}
+
+// @public (undocumented)
+export type DTMessageRawPayload =
+  | DTTextMessageRawPayload
+  | DTRichTextMessageRawPayload
+  | DTFileMessageRawPayload
+  | DTAudioMessageRawPayload
+  | DTVideoMessageRawPayload
+  | DTPictureMessageRawPayload;
+
+// @public (undocumented)
+export interface DTMessageRawPayloadBase extends DTContactRawPayload {
+  // (undocumented)
+  atUsers?: Array<{
+    dingtalkId: string;
+    staffId: string;
+  }>;
+  // (undocumented)
+  chatbotCorpId: string;
+  // (undocumented)
+  chatbotUserId: string;
+  // (undocumented)
+  conversationId: string;
+  // (undocumented)
+  conversationTitle?: string;
+  // (undocumented)
+  conversationType: '2' | '1';
+  // (undocumented)
+  createAt: number;
+  // (undocumented)
+  isInAtList?: boolean;
+  // (undocumented)
+  msgId: string;
+  // (undocumented)
+  msgtype: string;
+  // (undocumented)
+  robotCode: string;
+  // (undocumented)
+  sessionWebhook: string;
+  // (undocumented)
+  sessionWebhookExpiredTime: number;
+}
+
+// @public (undocumented)
+export function dtMessageToWechaty(_: PUPPET.Puppet, payload: DTMessageRawPayload): Promise<PUPPET.payloads.Message>;
+
+// @public (undocumented)
+export enum DTMessageType {
+  // (undocumented)
+  Audio = 'audio',
+  // (undocumented)
+  File = 'file',
+  // (undocumented)
+  Image = 'picture',
+  // (undocumented)
+  RichText = 'richText',
+  // (undocumented)
+  Text = 'text',
+  // (undocumented)
+  Video = 'video',
+}
+
+// @public (undocumented)
+export interface DTPictureMessageRawPayload extends DTMessageRawPayloadBase {
+  // (undocumented)
+  content: {
+    downloadCode: string;
+  };
+  // (undocumented)
+  msgtype: 'picture';
+}
+
+// @public (undocumented)
+export type DTRichSection = DTRichSection.Picture | DTRichSection.Text;
+
+// @public (undocumented)
+export namespace DTRichSection {
+  // (undocumented)
+  export type Picture = {
+    downloadCode: string;
+    type: 'picture';
+  };
+  // (undocumented)
+  export type Text = {
+    text: string;
+  };
+}
+
+// @public (undocumented)
+export interface DTRichTextMessageRawPayload extends DTMessageRawPayloadBase {
+  // (undocumented)
+  content: {
+    richText: DTRichSection[];
+  };
+  // (undocumented)
+  msgtype: 'richText';
+}
+
+// @public (undocumented)
+export function dtRoomMemberToWechaty(rawPayload: DTContactRawPayload): PUPPET.payloads.RoomMember;
+
+// @public (undocumented)
+export type DTRoomRawPayload = {
+  conversationId: string;
+  conversationTitle?: string;
+  sessionWebhook: string;
+  sessionWebhookExpiredTime: number;
+  memberList: DTContactRawPayload[];
+};
+
+// @public (undocumented)
+export function dtRoomToWechaty(_: PUPPET.Puppet, payload: DTRoomRawPayload): Promise<PUPPET.payloads.Room>;
+
+// @public (undocumented)
+export interface DTTextMessageRawPayload extends DTMessageRawPayloadBase {
+  // (undocumented)
+  msgtype: 'text';
+  // (undocumented)
+  text: {
+    content: string;
+  };
+}
+
+// @public (undocumented)
+export interface DTVideoMessageRawPayload extends DTMessageRawPayloadBase {
+  // (undocumented)
+  content: {
+    duration: number;
+    downloadCode: string;
+    videoType: string;
+  };
+  // (undocumented)
+  msgtype: 'video';
+}
+
+// @public
+export type EmptyMessagePayload = {
+  msgtype: 'empty';
+};
+
+// @public
+export type FeedCardMessagePayload = {
+  msgtype: 'feedCard';
+  feedCard: {
+    links: FeedLink[];
+  };
+};
+
+// @public (undocumented)
+export type FeedLink = {
+  title: string;
+  messageURL: string;
+  picURL: string;
+};
+
+// @public (undocumented)
+export type FileMessagePayload = {
+  msgtype: 'file';
+  file: {
+    mediaId: string;
+    fileName: string;
+    fileType: string;
+  };
+};
+
+// @public (undocumented)
+export type ImageMessagePayload = {
+  msgtype: 'picture';
+  image: {
+    photoURL: string;
+  };
+};
+
+// @public
+export type LinkMessagePayload = {
+  msgtype: 'link';
+  link: {
+    text: string;
+    title: string;
+    picUrl: string;
+    messageUrl: string;
+  };
+};
+
+// Warning: (ae-forgotten-export) The symbol "WithAt" needs to be exported by the entry point index.d.ts
+//
+// @public
+export type MarkdownMessagePayload = WithAt<{
+  msgtype: 'markdown';
+  markdown: {
+    title: string;
+    text: string;
+  };
+}>;
+
+// Warning: (ae-forgotten-export) The symbol "MessagePayloadMap" needs to be exported by the entry point index.d.ts
+//
+// @public
+export type MessagePayload = MessagePayloadMap[MessageType];
+
+// @public
+export enum MessageType {
+  // (undocumented)
+  ActionCard = 'actionCard',
+  // (undocumented)
+  Audio = 'audio',
+  // (undocumented)
+  Empty = 'empty',
+  // (undocumented)
+  FeedCard = 'feedCard',
+  // (undocumented)
+  File = 'file',
+  // (undocumented)
+  Image = 'image',
+  // (undocumented)
+  Link = 'link',
+  // (undocumented)
+  Markdown = 'markdown',
+  // (undocumented)
+  Text = 'text',
+  // (undocumented)
+  Video = 'video',
+}
+
+// @public (undocumented)
 export class PuppetDingTalk extends PUPPET.Puppet {
   constructor(options?: PuppetDingTalkOptions);
   // (undocumented)
@@ -15,11 +312,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   // (undocumented)
   contactRawPayload(contactId: string): Promise<DTContactRawPayload>;
   // (undocumented)
-  contactRawPayloadParser(
-    rawPayload: DTContactRawPayload,
-  ): Promise<PUPPET.payloads.Contact>;
-  // Warning: (ae-forgotten-export) The symbol "DTContactRawPayload" needs to be exported by the entry point index.d.ts
-  //
+  contactRawPayloadParser(rawPayload: DTContactRawPayload): Promise<PUPPET.payloads.Contact>;
   // (undocumented)
   protected contacts: Map<string, DTContactRawPayload>;
   // (undocumented)
@@ -27,11 +320,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   // (undocumented)
   messageRawPayload(messageId: string): Promise<DTMessageRawPayload>;
   // (undocumented)
-  messageRawPayloadParser(
-    rawPayload: DTMessageRawPayload,
-  ): Promise<PUPPET.payloads.Message>;
-  // Warning: (ae-forgotten-export) The symbol "DTMessageRawPayload" needs to be exported by the entry point index.d.ts
-  //
+  messageRawPayloadParser(rawPayload: DTMessageRawPayload): Promise<PUPPET.payloads.Message>;
   // (undocumented)
   protected messages: Map<string, DTMessageRawPayload>;
   // (undocumented)
@@ -41,10 +330,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     mentionIdList?: string[],
   ): Promise<void>;
   // (undocumented)
-  messageSendUrl(
-    conversationId: string,
-    urlLinkPayload: PUPPET.payloads.UrlLink,
-  ): Promise<void>;
+  messageSendUrl(conversationId: string, urlLinkPayload: PUPPET.payloads.UrlLink | MessagePayload): Promise<void>;
   // (undocumented)
   onStart(): Promise<void>;
   // (undocumented)
@@ -52,31 +338,17 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   // (undocumented)
   roomMemberList(roomId: string): Promise<string[]>;
   // (undocumented)
-  roomMemberRawPayload(
-    roomId: string,
-    contactId: string,
-  ): Promise<DTContactRawPayload>;
+  roomMemberRawPayload(roomId: string, contactId: string): Promise<DTContactRawPayload>;
   // (undocumented)
-  roomMemberRawPayloadParser(
-    rawPayload: DTContactRawPayload,
-  ): Promise<PUPPET.payloads.RoomMember>;
+  roomMemberRawPayloadParser(rawPayload: DTContactRawPayload): Promise<PUPPET.payloads.RoomMember>;
   // (undocumented)
   roomRawPayload(roomId: string): Promise<DTRoomRawPayload>;
   // (undocumented)
-  roomRawPayloadParser(
-    rawPayload: DTRoomRawPayload,
-  ): Promise<PUPPET.payloads.Room>;
-  // Warning: (ae-forgotten-export) The symbol "DTRoomRawPayload" needs to be exported by the entry point index.d.ts
-  //
+  roomRawPayloadParser(rawPayload: DTRoomRawPayload): Promise<PUPPET.payloads.Room>;
   // (undocumented)
   protected rooms: Map<string, DTRoomRawPayload>;
   // (undocumented)
-  protected say(
-    conversationId: string,
-    sayable: Sayable,
-    mentionIdList?: string[],
-  ): Promise<void>;
-  // Warning: (ae-forgotten-export) The symbol "Sayable" needs to be exported by the entry point index.d.ts
+  protected unstable__say(conversationId: string, sayable: Sayable, mentionIdList?: string[]): Promise<void>;
   unstable__send(messageId: string, sayable: Sayable): Promise<void>;
 }
 
@@ -87,6 +359,67 @@ export interface PuppetDingTalkOptions extends PUPPET.PuppetOptions {
   // (undocumented)
   clientSecret?: string;
 }
+
+// @public (undocumented)
+export type Sayable = string | MessagePayload;
+
+// @public (undocumented)
+export class SayableSayer extends Sender {
+  // (undocumented)
+  protected atUserIds(message: MarkdownMessagePayload | TextMessagePayload, mentionIdList: string[]): void;
+  // (undocumented)
+  protected mention(message: MessagePayload, mentionIdList: true | string[]): void;
+  // (undocumented)
+  protected resolve(sayable: Sayable): Promise<MessagePayload>;
+  // (undocumented)
+  say(sayable: Sayable): Promise<any>;
+  // (undocumented)
+  say(sayable: Sayable, atAll: true): Promise<any>;
+  // (undocumented)
+  say(sayable: Sayable, mentionIdList: string[]): Promise<any>;
+}
+
+// @public (undocumented)
+export class Sender {
+  constructor(url: string, expiredTime: number);
+  // (undocumented)
+  protected expiredTime: number;
+  // (undocumented)
+  isExpired(): boolean;
+  // (undocumented)
+  send(message: MessagePayload): Promise<void>;
+  // (undocumented)
+  protected url: string;
+}
+
+// @public (undocumented)
+export type SimpleActionCard = {
+  title: string;
+  text: string;
+  singleTitle: string;
+  singleURL: string;
+};
+
+// @public
+export type TextMessagePayload = WithAt<{
+  msgtype: 'text';
+  text: {
+    content: string;
+  };
+}>;
+
+// @public (undocumented)
+export type VideoMessagePayload = {
+  msgtype: 'video';
+  video: {
+    picMediaId: string;
+    videoMediaId: string;
+    videoType: number;
+    duration: string;
+    width?: string;
+    height?: string;
+  };
+};
 
 // (No @packageDocumentation comment for this package)
 ```
