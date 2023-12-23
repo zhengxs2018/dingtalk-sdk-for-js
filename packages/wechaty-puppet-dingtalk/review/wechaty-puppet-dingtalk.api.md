@@ -7,6 +7,7 @@ import { Dingtalk } from '@zhengxs/dingtalk';
 import { AuthCredential } from '@zhengxs/dingtalk-auth';
 import { HubConnection } from '@zhengxs/dingtalk-event-hubs';
 import { FileBoxInterface } from 'file-box';
+import Keyv from 'keyv';
 import * as PUPPET from 'wechaty-puppet';
 
 // @public (undocumented)
@@ -59,15 +60,27 @@ export interface DTAudioMessageRawPayload extends DTMessageRawPayloadBase {
 }
 
 // @public (undocumented)
-export interface DTContactRawPayload extends DTSessionWebhookRawPayload {
+export interface DTContactRawPayload {
+  avatar: string;
   corpId: string;
   id: string;
   name: string;
+  sessionWebhook: string;
+  sessionWebhookExpiredTime: number;
   staffId?: string;
+  type: DTContactType;
 }
 
 // @public (undocumented)
 export function dtContactToWechaty(_: PUPPET.Puppet, payload: DTContactRawPayload): Promise<PUPPET.payloads.Contact>;
+
+// @public (undocumented)
+export enum DTContactType {
+  // (undocumented)
+  Robot = 1,
+  // (undocumented)
+  User = 2,
+}
 
 // @public (undocumented)
 export interface DTFileMessageRawPayload extends DTMessageRawPayloadBase {
@@ -186,23 +199,21 @@ export interface DTRichTextMessageRawPayload extends DTMessageRawPayloadBase {
 export function dtRoomMemberToWechaty(rawPayload: DTContactRawPayload): PUPPET.payloads.RoomMember;
 
 // @public (undocumented)
-export interface DTRoomRawPayload extends DTSessionWebhookRawPayload {
-  // (undocumented)
-  conversationId: string;
-  // (undocumented)
-  conversationTitle?: string;
-  // (undocumented)
-  memberList: DTContactRawPayload[];
+export interface DTRoomRawPayload extends PUPPET.payloads.Room {
+  sessionWebhook: string;
+  sessionWebhookExpiredTime: number;
 }
 
 // @public (undocumented)
 export function dtRoomToWechaty(_: PUPPET.Puppet, payload: DTRoomRawPayload): Promise<PUPPET.payloads.Room>;
 
-// @public (undocumented)
+// @public
 export interface DTSessionWebhookRawPayload {
-  // (undocumented)
+  chatbotUserId: string;
+  conversationId: string;
+  msgId: string;
+  senderId: string;
   sessionWebhook: string;
-  // (undocumented)
   sessionWebhookExpiredTime: number;
 }
 
@@ -268,11 +279,14 @@ export type FileMessagePayload = {
   };
 };
 
+// @public
+export type GetMediaDurationInSeconds = (fileBox: FileBoxInterface) => Promise<number>;
+
 // @public (undocumented)
 export type ImageMessagePayload = {
-  msgtype: 'picture';
+  msgtype: 'image';
   image: {
-    photoURL: string;
+    picURL: string;
   };
 };
 
@@ -331,17 +345,23 @@ export enum MessageType {
 export class PuppetDingTalk extends PUPPET.Puppet {
   constructor(options?: PuppetDingTalkOptions);
   // (undocumented)
-  protected client: Dingtalk;
+  protected _clearCacheAfterLogout: boolean;
   // (undocumented)
-  protected connection?: HubConnection;
-  // (undocumented)
-  contactRawPayload(contactId: string): Promise<DTContactRawPayload>;
+  contactRawPayload(contactId: string): Promise<DTContactRawPayload | void>;
   // (undocumented)
   contactRawPayloadParser(rawPayload: DTContactRawPayload): Promise<PUPPET.payloads.Contact>;
   // (undocumented)
-  protected contacts: Map<string, DTContactRawPayload>;
+  protected _contactsStore: Keyv<DTContactRawPayload>;
   // (undocumented)
-  protected credential: AuthCredential;
+  protected _dkClient: Dingtalk;
+  // (undocumented)
+  protected _dkConnection?: HubConnection;
+  // (undocumented)
+  protected _dkCredential: AuthCredential;
+  // (undocumented)
+  protected _getAudioDurationInSeconds: GetMediaDurationInSeconds;
+  // (undocumented)
+  protected _getVideoDurationInSeconds: GetMediaDurationInSeconds;
   // (undocumented)
   messageFile(messageId: string): Promise<FileBoxInterface>;
   // (undocumented)
@@ -350,8 +370,6 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   messageRawPayload(messageId: string): Promise<DTMessageRawPayload>;
   // (undocumented)
   messageRawPayloadParser(rawPayload: DTMessageRawPayload): Promise<PUPPET.payloads.Message>;
-  // (undocumented)
-  protected messages: Map<string, DTMessageRawPayload>;
   // (undocumented)
   messageSendFile(conversationId: string, fileBox: FileBoxInterface): Promise<void>;
   // (undocumented)
@@ -363,13 +381,15 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   // (undocumented)
   messageSendUrl(conversationId: string, urlLinkPayload: PUPPET.payloads.UrlLink | MessagePayload): Promise<void>;
   // (undocumented)
+  protected _messagesStore: Keyv<DTMessageRawPayload>;
+  // (undocumented)
   onStart(): Promise<void>;
   // (undocumented)
   onStop(): Promise<void>;
   // (undocumented)
   roomMemberList(roomId: string): Promise<string[]>;
   // (undocumented)
-  roomMemberRawPayload(roomId: string, contactId: string): Promise<DTContactRawPayload>;
+  roomMemberRawPayload(roomId: string, contactId: string): Promise<DTContactRawPayload | void>;
   // (undocumented)
   roomMemberRawPayloadParser(rawPayload: DTContactRawPayload): Promise<PUPPET.payloads.RoomMember>;
   // (undocumented)
@@ -377,17 +397,27 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   // (undocumented)
   roomRawPayloadParser(rawPayload: DTRoomRawPayload): Promise<PUPPET.payloads.Room>;
   // (undocumented)
-  protected rooms: Map<string, DTRoomRawPayload>;
+  protected _roomsStore: Keyv<DTRoomRawPayload>;
+  // (undocumented)
+  protected _sessionWebhooksStore: Keyv<DTSessionWebhookRawPayload>;
+  // (undocumented)
+  protected unstable_defaultGetAudioDurationInSeconds: GetMediaDurationInSeconds;
+  // (undocumented)
+  protected unstable_defaultGetVideoDurationInSeconds: GetMediaDurationInSeconds;
 }
 
 // @public (undocumented)
 export interface PuppetDingTalkOptions extends PUPPET.PuppetOptions {
-  // (undocumented)
+  clearCacheAfterLogout?: boolean;
   clientId?: string;
-  // (undocumented)
   clientSecret?: string;
-  // (undocumented)
+  contactsStore?: Keyv<DTContactRawPayload>;
   credential?: AuthCredential;
+  getAudioDurationInSeconds?: GetMediaDurationInSeconds;
+  getVideoDurationInSeconds?: GetMediaDurationInSeconds;
+  messagesStore?: Keyv<DTMessageRawPayload>;
+  roomsStore?: Keyv<DTRoomRawPayload>;
+  sessionWebhooksStore?: Keyv<DTSessionWebhookRawPayload>;
 }
 
 // @public (undocumented)
@@ -411,7 +441,7 @@ export class SayableSayer extends Sender {
 
 // @public (undocumented)
 export class Sender {
-  constructor(url: string, expiredTime: number);
+  constructor(url: string, expiredTime?: number);
   // (undocumented)
   protected expiredTime: number;
   // (undocumented)
@@ -445,7 +475,7 @@ export type VideoMessagePayload = {
     picMediaId: string;
     videoMediaId: string;
     videoType: string;
-    duration: string;
+    duration: string | number;
     width?: string;
     height?: string;
   };

@@ -1,4 +1,4 @@
-import { AuthCredential, IdentityClient, type IdentityClientOptions } from '@zhengxs/dingtalk-auth';
+import { AuthCredential, CorpAuthCredential, IdentityClient, type IdentityClientOptions } from '@zhengxs/dingtalk-auth';
 import {
   APIConnectionError,
   APIConnectionTimeoutError,
@@ -17,10 +17,12 @@ import {
 
 import * as API from './resources';
 
-export type DingtalkOptions = IdentityClientOptions<AuthCredential>;
+export type DingtalkCredential = AuthCredential | CorpAuthCredential;
+
+export type DingtalkOptions = IdentityClientOptions<DingtalkCredential>;
 
 // TODO: 支持 CorpAuthCredential 第三方应用
-export class Dingtalk extends IdentityClient<AuthCredential> {
+export class Dingtalk extends IdentityClient<DingtalkCredential> {
   robots = new API.Robots(this);
 
   files: API.Files = new API.Files(this);

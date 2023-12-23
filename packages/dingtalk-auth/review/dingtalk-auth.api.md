@@ -47,6 +47,10 @@ export class CorpAuthCredential extends TokenSessionCredential<CorpAuthGetTokenP
   // (undocumented)
   authCorpId?: string;
   // (undocumented)
+  get clientId(): string | undefined;
+  // (undocumented)
+  get clientSecret(): string | undefined;
+  // (undocumented)
   protected request(params: CorpAuthGetTokenParams): Promise<TokenResponse>;
   // (undocumented)
   suiteKey?: string;

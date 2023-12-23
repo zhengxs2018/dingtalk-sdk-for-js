@@ -1,4 +1,4 @@
-import { AuthCredential, IdentityClient } from '@zhengxs/dingtalk-auth';
+import { AuthCredential, CorpAuthCredential, IdentityClient } from '@zhengxs/dingtalk-auth';
 
 import type { ConnectionParamsOptions, OperationOption } from './types';
 
@@ -17,13 +17,13 @@ const defaultConnectionParams: ConnectionParamsOptions = {
 };
 
 export interface HttpLinkOptions extends ConnectionParamsOptions {
-  client?: IdentityClient<AuthCredential>;
-  credential?: AuthCredential;
+  client?: IdentityClient<AuthCredential | CorpAuthCredential>;
+  credential?: AuthCredential | CorpAuthCredential;
 }
 
 export class HttpLink {
-  protected client: IdentityClient<AuthCredential>;
-  protected credential: AuthCredential;
+  protected client: IdentityClient<AuthCredential | CorpAuthCredential>;
+  protected credential: AuthCredential | CorpAuthCredential;
 
   protected ua: string;
   protected subscriptions: OperationOption[];

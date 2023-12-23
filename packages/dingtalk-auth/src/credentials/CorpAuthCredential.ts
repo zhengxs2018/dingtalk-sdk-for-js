@@ -23,6 +23,14 @@ export class CorpAuthCredential extends TokenSessionCredential<CorpAuthGetTokenP
     this.suiteTicket = suiteTicket;
   }
 
+  get clientId(): string | undefined {
+    return this.suiteKey;
+  }
+
+  get clientSecret(): string | undefined {
+    return this.suiteSecret;
+  }
+
   protected override request(params: CorpAuthGetTokenParams): Promise<TokenResponse> {
     const {
       suiteKey = this.suiteKey,
