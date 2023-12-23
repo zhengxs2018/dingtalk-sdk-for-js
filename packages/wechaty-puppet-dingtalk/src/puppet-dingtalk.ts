@@ -30,8 +30,47 @@ import {
 
 const AttachmentExtRE = /\.(doc|docx|xls|xlsx|ppt|pptx|zip|pdf|rar)$/i;
 const AudioExtRE = /\.(mp3|wav|wma|ogg|aac|flac)$/i;
-const VideoExtRE = /\.(mp4|mov|avi|rmvb|mkv|flv|rm|asf|3gp|wmv|mpeg|dat|mpg|ts|mts|vob)$/i;
+const VideoExtRE = /\.(mp4|mov|avi|rmvb|mkv|flv|rm|asf|3gp|wmv)$/i;
 const ImageExtRE = /\.(jpg|jpeg|png|gif|bmp|webp)$/i;
+
+/**
+ * 获取视频或音频的时长
+ *
+ * 如果是视频或音频，需要手动传递时长，而且是强制要求传递时长的。
+ * 但调用钉钉的上传接口，钉钉并没有返回时长，所以需要手动获取时长。
+ *
+ * 参考：[机器人发送消息的类型](https://open.dingtalk.com/document/orgapp/types-of-messages-sent-by-robots)
+ *
+ * @example 修复音频时长
+ *
+ * ```ts
+ * import os from 'node:os';
+ * import path from 'node:path';
+ * import { unlinkSync } from 'node:fs';
+ *
+ * import { PuppetDingTalk } from '@zhengxs/wechaty-puppet-dingtalk'
+ * import { getAudioDurationInSeconds } from 'get-audio-duration'
+ *
+ * const puppet = new PuppetDingTalk({
+ *   async getAudioDurationInSeconds(fileBox) {
+ *     // 生成临时文件地址
+ *     const saveTo = path.resolve(os.tmpdir(), fileBox.name)
+ *
+ *     // 保存到临时文件
+ *     await fileBox.toFile(saveTo)
+ *
+ *     try {
+ *       // 获取时长
+ *       return await getAudioDurationInSeconds(saveTo)
+ *     } finally {
+ *        // 删除临时文件
+ *        unlinkSync(saveTo)
+ *     }
+ *   },
+ * })
+ * ```
+ */
+export type GetMediaDurationInSeconds = (fileBox: FileBoxInterface) => Promise<number>
 
 export interface PuppetDingTalkOptions extends PUPPET.PuppetOptions {
   /**
@@ -74,6 +113,20 @@ export interface PuppetDingTalkOptions extends PUPPET.PuppetOptions {
    * 默认为 `true`
    */
   clearCacheAfterLogout?: boolean;
+
+  /**
+   * 获取视频时长
+   *
+   * @returns 以秒为单位的视频时长
+   */
+  getVideoDurationInSeconds?: GetMediaDurationInSeconds
+
+  /**
+   * 获取视频时长
+   *
+   * @returns 以秒为单位的视频时长
+   */
+  getAudioDurationInSeconds?: GetMediaDurationInSeconds
 }
 
 export class PuppetDingTalk extends PUPPET.Puppet {
@@ -87,6 +140,9 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   protected _sessionWebhooksStore: Keyv<DTSessionWebhookRawPayload>
 
   protected _clearCacheAfterLogout: boolean
+
+  protected _getVideoDurationInSeconds: GetMediaDurationInSeconds
+  protected _getAudioDurationInSeconds: GetMediaDurationInSeconds
 
   constructor(options: PuppetDingTalkOptions = {}) {
     const {
@@ -110,6 +166,8 @@ export class PuppetDingTalk extends PUPPET.Puppet {
         }),
       }),
       clearCacheAfterLogout = true,
+      getAudioDurationInSeconds,
+      getVideoDurationInSeconds,
       ...rest
     } = options;
 
@@ -117,6 +175,9 @@ export class PuppetDingTalk extends PUPPET.Puppet {
 
     this._dkCredential = credential;
     this._dkClient = new Dingtalk({ credential });
+
+    this._getAudioDurationInSeconds = getAudioDurationInSeconds || this.unstable_defaultGetAudioDurationInSeconds
+    this._getVideoDurationInSeconds = getVideoDurationInSeconds || this.unstable_defaultGetVideoDurationInSeconds
 
     this._contactsStore = contactsStore
     this._roomsStore = roomsStore
@@ -271,11 +332,30 @@ export class PuppetDingTalk extends PUPPET.Puppet {
       }
 
       case AudioExtRE.test(ext): {
-        throw new Error(`暂不支持语音文件的发送`);
+        const [
+          fileObj,
+          duration,
+        ] = await Promise.all([
+          files.create({
+            type: 'voice',
+            media: await toFile(fileBox.toStream(), fileBox.name),
+          }),
+          this._getAudioDurationInSeconds(fileBox),
+        ]);
+
+        await this.unstable__say(conversationId, {
+          msgtype: 'audio',
+          audio: {
+            mediaId: fileObj.media_id,
+            duration: Math.floor(duration * 1000),
+          },
+        });
+
+        break
       }
 
       case VideoExtRE.test(ext): {
-        throw new Error(`暂不支持视频文件的发送`);
+        throw new Error(`暂不支持视频的发送`);
       }
 
       case ImageExtRE.test(ext): {
@@ -470,5 +550,13 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     const msg = await files.retrieve(robotCode, downloadCode);
 
     return FileBox.fromUrl(msg.downloadUrl, { name });
+  }
+
+  protected unstable_defaultGetAudioDurationInSeconds: GetMediaDurationInSeconds = function (_fileBox) {
+    return Promise.resolve(1)
+  }
+
+  protected unstable_defaultGetVideoDurationInSeconds: GetMediaDurationInSeconds = function (_fileBox) {
+    return Promise.resolve(1)
   }
 }
