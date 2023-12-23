@@ -1,6 +1,6 @@
 {
   "name": "@zhengxs/wechaty-puppet-dingtalk",
-  "version": "0.0.1-beta.6",
+  "version": "0.0.1-beta.7",
   "description": "",
   "sideEffect": false,
   "main": "./dist/index.cjs",
@@ -30,7 +30,7 @@
     "@zhengxs/dingtalk": "workspace:^",
     "@zhengxs/dingtalk-auth": "workspace:^",
     "@zhengxs/dingtalk-event-hubs": "workspace:^",
-    "@zhengxs/http": "^0.0.1-rc.5",
+    "@zhengxs/http": "^0.0.1-rc.6",
     "agentkeepalive": "^4.5.0",
     "file-box": "^1.4.15",
     "form-data-encoder": "^4.0.2",

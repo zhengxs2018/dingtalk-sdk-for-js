@@ -1,6 +1,6 @@
 {
   "name": "@zhengxs/dingtalk-auth",
-  "version": "0.0.1-beta.0",
+  "version": "0.0.1-beta.1",
   "description": "",
   "keywords": [
     "dingtalk",
@@ -30,7 +30,7 @@
     "extract-api": "mkdirp ./review && api-extractor run --local"
   },
   "dependencies": {
-    "@zhengxs/http": "^0.0.1-rc.5"
+    "@zhengxs/http": "^0.0.1-rc.6"
   },
   "publishConfig": {
     "access": "public",
