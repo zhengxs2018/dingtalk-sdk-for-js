@@ -1,31 +1,31 @@
 import { extname } from 'node:path';
 
+import QuickLRU from '@alloc/quick-lru';
 import { Dingtalk } from '@zhengxs/dingtalk';
 import { AuthCredential } from '@zhengxs/dingtalk-auth';
 import { type HubConnection, HubConnectionBuilder } from '@zhengxs/dingtalk-event-hubs';
 import { toFile } from '@zhengxs/http';
 import { FileBox, type FileBoxInterface } from 'file-box';
 import { GError } from 'gerror';
-import Keyv from 'keyv'
+import Keyv from 'keyv';
 import * as PUPPET from 'wechaty-puppet';
 import { log } from 'wechaty-puppet';
-import QuickLRU from '@alloc/quick-lru'
 
 import {
-  type DTMediaMessageRawPayload,
-  type Sayable,
-  SayableSayer,
-  DTContactType,
-  type DTSessionWebhookRawPayload,
   type DTContactRawPayload,
   dtContactToWechaty,
-  dtRoomMemberToWechaty,
+  DTContactType,
+  type DTMediaMessageRawPayload,
   type DTMessageRawPayload,
   dtMessageToWechaty,
   DTMessageType,
+  dtRoomMemberToWechaty,
   type DTRoomRawPayload,
   dtRoomToWechaty,
+  type DTSessionWebhookRawPayload,
   type MessagePayload,
+  type Sayable,
+  SayableSayer,
 } from './dingtalk';
 
 const AttachmentExtRE = /\.(doc|docx|xls|xlsx|ppt|pptx|zip|pdf|rar)$/i;
@@ -70,7 +70,7 @@ const ImageExtRE = /\.(jpg|jpeg|png|gif|bmp|webp)$/i;
  * })
  * ```
  */
-export type GetMediaDurationInSeconds = (fileBox: FileBoxInterface) => Promise<number>
+export type GetMediaDurationInSeconds = (fileBox: FileBoxInterface) => Promise<number>;
 
 export interface PuppetDingTalkOptions extends PUPPET.PuppetOptions {
   /**
@@ -94,19 +94,19 @@ export interface PuppetDingTalkOptions extends PUPPET.PuppetOptions {
   /**
    * 群数据缓存
    */
-  roomsStore?: Keyv<DTRoomRawPayload>
+  roomsStore?: Keyv<DTRoomRawPayload>;
   /**
    * 联系人数据缓存
    */
-  contactsStore?: Keyv<DTContactRawPayload>
+  contactsStore?: Keyv<DTContactRawPayload>;
   /**
    * 消息数据缓存
    */
-  messagesStore?: Keyv<DTMessageRawPayload>
+  messagesStore?: Keyv<DTMessageRawPayload>;
   /**
    * 会话 Webhook 数据缓存
    */
-  sessionWebhooksStore?: Keyv<DTSessionWebhookRawPayload>
+  sessionWebhooksStore?: Keyv<DTSessionWebhookRawPayload>;
   /**
    * 登出后是否清理缓存
    *
@@ -119,14 +119,14 @@ export interface PuppetDingTalkOptions extends PUPPET.PuppetOptions {
    *
    * @returns 以秒为单位的视频时长
    */
-  getVideoDurationInSeconds?: GetMediaDurationInSeconds
+  getVideoDurationInSeconds?: GetMediaDurationInSeconds;
 
   /**
    * 获取视频时长
    *
    * @returns 以秒为单位的视频时长
    */
-  getAudioDurationInSeconds?: GetMediaDurationInSeconds
+  getAudioDurationInSeconds?: GetMediaDurationInSeconds;
 }
 
 export class PuppetDingTalk extends PUPPET.Puppet {
@@ -134,15 +134,15 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   protected _dkCredential: AuthCredential;
   protected _dkConnection?: HubConnection;
 
-  protected _roomsStore: Keyv<DTRoomRawPayload>
-  protected _contactsStore: Keyv<DTContactRawPayload>
-  protected _messagesStore: Keyv<DTMessageRawPayload>
-  protected _sessionWebhooksStore: Keyv<DTSessionWebhookRawPayload>
+  protected _roomsStore: Keyv<DTRoomRawPayload>;
+  protected _contactsStore: Keyv<DTContactRawPayload>;
+  protected _messagesStore: Keyv<DTMessageRawPayload>;
+  protected _sessionWebhooksStore: Keyv<DTSessionWebhookRawPayload>;
 
-  protected _clearCacheAfterLogout: boolean
+  protected _clearCacheAfterLogout: boolean;
 
-  protected _getVideoDurationInSeconds: GetMediaDurationInSeconds
-  protected _getAudioDurationInSeconds: GetMediaDurationInSeconds
+  protected _getVideoDurationInSeconds: GetMediaDurationInSeconds;
+  protected _getAudioDurationInSeconds: GetMediaDurationInSeconds;
 
   constructor(options: PuppetDingTalkOptions = {}) {
     const {
@@ -176,14 +176,14 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     this._dkCredential = credential;
     this._dkClient = new Dingtalk({ credential });
 
-    this._getAudioDurationInSeconds = getAudioDurationInSeconds || this.unstable_defaultGetAudioDurationInSeconds
-    this._getVideoDurationInSeconds = getVideoDurationInSeconds || this.unstable_defaultGetVideoDurationInSeconds
+    this._getAudioDurationInSeconds = getAudioDurationInSeconds || this.unstable_defaultGetAudioDurationInSeconds;
+    this._getVideoDurationInSeconds = getVideoDurationInSeconds || this.unstable_defaultGetVideoDurationInSeconds;
 
-    this._contactsStore = contactsStore
-    this._roomsStore = roomsStore
-    this._messagesStore = messagesStore
-    this._sessionWebhooksStore = sessionWebhooksStore
-    this._clearCacheAfterLogout = clearCacheAfterLogout
+    this._contactsStore = contactsStore;
+    this._roomsStore = roomsStore;
+    this._messagesStore = messagesStore;
+    this._sessionWebhooksStore = sessionWebhooksStore;
+    this._clearCacheAfterLogout = clearCacheAfterLogout;
   }
 
   override async roomRawPayload(roomId: string): Promise<DTRoomRawPayload> {
@@ -195,11 +195,11 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     if (!rawPayload) {
       throw new GError({
         code: 5,
-        message: `PuppetDingTalk: Room ${roomId} not found`
+        message: `PuppetDingTalk: Room ${roomId} not found`,
       });
     }
 
-    return rawPayload
+    return rawPayload;
   }
 
   override async roomRawPayloadParser(rawPayload: DTRoomRawPayload): Promise<PUPPET.payloads.Room> {
@@ -224,11 +224,11 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     if (!rawPayload) {
       throw new GError({
         code: 5,
-        message: `PuppetDingTalk: Contacts ${contactId} not found in Room(${roomId})`
+        message: `PuppetDingTalk: Contacts ${contactId} not found in Room(${roomId})`,
       });
     }
 
-    return rawPayload
+    return rawPayload;
   }
 
   override async roomMemberRawPayloadParser(rawPayload: DTContactRawPayload): Promise<PUPPET.payloads.RoomMember> {
@@ -244,11 +244,11 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     if (!rawPayload) {
       throw new GError({
         code: 5,
-        message: `PuppetDingTalk: Contacts ${contactId} not found`
+        message: `PuppetDingTalk: Contacts ${contactId} not found`,
       });
     }
 
-    return rawPayload
+    return rawPayload;
   }
 
   override async contactRawPayloadParser(rawPayload: DTContactRawPayload): Promise<PUPPET.payloads.Contact> {
@@ -264,11 +264,11 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     if (!rawPayload) {
       throw new GError({
         code: 5,
-        message: `PuppetDingTalk: Message ${messageId} not found`
+        message: `PuppetDingTalk: Message ${messageId} not found`,
       });
     }
 
-    return rawPayload
+    return rawPayload;
   }
 
   override async messageRawPayloadParser(rawPayload: DTMessageRawPayload): Promise<PUPPET.payloads.Message> {
@@ -332,10 +332,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
       }
 
       case AudioExtRE.test(ext): {
-        const [
-          fileObj,
-          duration,
-        ] = await Promise.all([
+        const [fileObj, duration] = await Promise.all([
           files.create({
             type: 'voice',
             media: await toFile(fileBox.toStream(), fileBox.name),
@@ -351,7 +348,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
           },
         });
 
-        break
+        break;
       }
 
       case VideoExtRE.test(ext): {
@@ -361,7 +358,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
       case ImageExtRE.test(ext): {
         // hack 强制获取私有的 remoteUrl 属性
         // @ts-expect-error
-        const remoteUrl = fileBox.remoteUrl
+        const remoteUrl = fileBox.remoteUrl;
         if (remoteUrl) {
           await this.unstable__say(conversationId, {
             msgtype: 'image',
@@ -369,13 +366,13 @@ export class PuppetDingTalk extends PUPPET.Puppet {
               picURL: remoteUrl,
             },
           });
-          break
+          break;
         }
 
         throw new GError({
           code: 12,
-          message: '暂不支持以本地文件的方式上传图片'
-        })
+          message: '暂不支持以本地文件的方式上传图片',
+        });
       }
 
       default:
@@ -420,14 +417,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     connection.on('message', async event => {
       const payload: DTMessageRawPayload = JSON.parse(event.data);
 
-      const {
-        msgId,
-        senderId,
-        chatbotUserId,
-        conversationId,
-        sessionWebhook,
-        sessionWebhookExpiredTime,
-      } = payload
+      const { msgId, senderId, chatbotUserId, conversationId, sessionWebhook, sessionWebhookExpiredTime } = payload;
 
       const sessionWebhookPayload: DTSessionWebhookRawPayload = {
         msgId,
@@ -436,7 +426,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
         conversationId,
         sessionWebhook,
         sessionWebhookExpiredTime,
-      }
+      };
 
       const storeQueue = [
         messagesStore.set(msgId, payload),
@@ -464,7 +454,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
         // Note: wechaty 的消息发送不传递消息ID回来，只给联系人ID 和 群ID
         // 为了快速找到 sessionWebhook，以联系人ID 和 群 ID 各写一次
         sessionWebhooksStore.set(senderId, sessionWebhookPayload, sessionWebhookExpiredTime),
-      ]
+      ];
 
       if (payload.conversationType === '2') {
         const roomPayload: DTRoomRawPayload = {
@@ -474,7 +464,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
           adminIdList: [],
           sessionWebhook,
           sessionWebhookExpiredTime,
-        }
+        };
 
         if (payload.isAdmin) {
           roomPayload.adminIdList.push(senderId);
@@ -483,12 +473,12 @@ export class PuppetDingTalk extends PUPPET.Puppet {
         storeQueue.push(
           roomsStore.set(conversationId, roomPayload),
           // Note: 理由同上
-          sessionWebhooksStore.set(conversationId, sessionWebhookPayload, sessionWebhookExpiredTime)
+          sessionWebhooksStore.set(conversationId, sessionWebhookPayload, sessionWebhookExpiredTime),
         );
       }
 
       // Note: 存储机器人用户信息后，再触发登录事件
-      await Promise.all(storeQueue)
+      await Promise.all(storeQueue);
 
       // Note: 未登录，就触发登录事件
       if (!this.isLoggedIn) {
@@ -507,14 +497,14 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     connection.on('connected', waitStable);
 
     connection.on('disconnected', () => {
-      if (!this.isLoggedIn) return
+      if (!this.isLoggedIn) return;
 
       // 清理缓存
       if (this._clearCacheAfterLogout) {
-        this._contactsStore.clear()
-        this._roomsStore.clear()
-        this._messagesStore.clear()
-        this._sessionWebhooksStore.clear()
+        this._contactsStore.clear();
+        this._roomsStore.clear();
+        this._messagesStore.clear();
+        this._sessionWebhooksStore.clear();
       }
 
       this.logout();
@@ -538,20 +528,21 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     }
   }
 
-  private async unstable__say(conversationId: string, sayable: Sayable, mentionIdList?: true | string[]): Promise<void> {
-    const rawPayload = await this._sessionWebhooksStore.get(conversationId)
+  private async unstable__say(
+    conversationId: string,
+    sayable: Sayable,
+    mentionIdList?: true | string[],
+  ): Promise<void> {
+    const rawPayload = await this._sessionWebhooksStore.get(conversationId);
 
     if (!rawPayload) {
       this.emit('error', {
         data: GError.stringify(`Webhook ${conversationId} does not exist or has expired`),
-      })
-      return
+      });
+      return;
     }
 
-    const sender = new SayableSayer(
-      rawPayload.sessionWebhook,
-      rawPayload.sessionWebhookExpiredTime,
-    )
+    const sender = new SayableSayer(rawPayload.sessionWebhook, rawPayload.sessionWebhookExpiredTime);
 
     // @ts-expect-error
     await sender.say(sayable, mentionIdList);
@@ -569,10 +560,10 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   }
 
   protected unstable_defaultGetAudioDurationInSeconds: GetMediaDurationInSeconds = function (_fileBox) {
-    return Promise.resolve(1)
-  }
+    return Promise.resolve(1);
+  };
 
   protected unstable_defaultGetVideoDurationInSeconds: GetMediaDurationInSeconds = function (_fileBox) {
-    return Promise.resolve(1)
-  }
+    return Promise.resolve(1);
+  };
 }

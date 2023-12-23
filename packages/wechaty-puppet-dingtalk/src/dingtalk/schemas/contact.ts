@@ -34,7 +34,7 @@ export interface DTContactRawPayload {
   /**
    * 用户类型
    */
-  type: DTContactType
+  type: DTContactType;
 
   /**
    * Webhook 地址

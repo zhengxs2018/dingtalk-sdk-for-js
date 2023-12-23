@@ -1,4 +1,10 @@
-import { type MarkdownMessagePayload, type MessagePayload, MessageType, type Sayable, type TextMessagePayload } from './payloads';
+import {
+  type MarkdownMessagePayload,
+  type MessagePayload,
+  MessageType,
+  type Sayable,
+  type TextMessagePayload,
+} from './payloads';
 import { Sender } from './sender';
 
 export class SayableSayer extends Sender {
