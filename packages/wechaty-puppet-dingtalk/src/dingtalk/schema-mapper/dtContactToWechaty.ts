@@ -8,7 +8,7 @@ export async function dtContactToWechaty(
 ): Promise<PUPPET.payloads.Contact> {
   const ret: PUPPET.payloads.Contact = {
     id: payload.id,
-    avatar: payload.id,
+    avatar: '',
     type: PUPPET.types.Contact.Individual,
     gender: PUPPET.types.ContactGender.Unknown,
     name: payload.name,
