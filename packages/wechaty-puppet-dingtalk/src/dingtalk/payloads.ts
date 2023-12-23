@@ -42,9 +42,9 @@ export type LinkMessagePayload = {
 };
 
 export type ImageMessagePayload = {
-  msgtype: 'picture';
+  msgtype: 'image';
   image: {
-    photoURL: string;
+    picURL: string;
   };
 };
 
