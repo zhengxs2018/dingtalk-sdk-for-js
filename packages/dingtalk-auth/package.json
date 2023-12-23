@@ -30,7 +30,7 @@
     "extract-api": "mkdirp ./review && api-extractor run --local"
   },
   "dependencies": {
-    "@zhengxs/http": "^0.0.1-rc.3"
+    "@zhengxs/http": "^0.0.1-rc.5"
   },
   "publishConfig": {
     "access": "public",
