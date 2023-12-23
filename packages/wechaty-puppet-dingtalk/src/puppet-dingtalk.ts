@@ -23,7 +23,9 @@ import {
   type DTRoomRawPayload,
   dtRoomToWechaty,
   type DTSessionWebhookRawPayload,
+  type InteractiveCardMessagePayload,
   type MessagePayload,
+  MessageType,
   type Sayable,
   SayableSayer,
 } from './dingtalk';
@@ -300,22 +302,31 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     return this.unstable__say(conversationId, content, mentionIdList || []);
   }
 
-  override async messageSendUrl(conversationId: string, urlLinkPayload: PUPPET.payloads.UrlLink | MessagePayload) {
+  override async messageSendUrl(
+    conversationId: string,
+    urlLinkPayload: PUPPET.payloads.UrlLink | MessagePayload,
+  ): Promise<string | void> {
     log.verbose('PuppetDingTalk', 'messageSendUrl(%s, %s)', conversationId, urlLinkPayload);
 
-    if ('msgtype' in urlLinkPayload) {
-      return this.unstable__say(conversationId, urlLinkPayload);
+    if (!('msgtype' in urlLinkPayload)) {
+      return this.unstable__say(conversationId, {
+        msgtype: 'link',
+        link: {
+          title: urlLinkPayload.title,
+          text: urlLinkPayload.description || '',
+          messageUrl: urlLinkPayload.url,
+          picUrl: urlLinkPayload.thumbnailUrl || '',
+        },
+      });
     }
 
-    return this.unstable__say(conversationId, {
-      msgtype: 'link',
-      link: {
-        title: urlLinkPayload.title,
-        text: urlLinkPayload.description || '',
-        messageUrl: urlLinkPayload.url,
-        picUrl: urlLinkPayload.thumbnailUrl || '',
-      },
-    });
+    switch (urlLinkPayload.msgtype) {
+      case MessageType.InteractiveCard:
+        // TODO 返回什么东西比较好？
+        return this.unstable__messageSendInteractiveCard(conversationId, urlLinkPayload);
+      default:
+        return this.unstable__say(conversationId, urlLinkPayload);
+    }
   }
 
   override async messageSendFile(conversationId: string, fileBox: FileBoxInterface): Promise<void> {
@@ -430,13 +441,26 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     connection.on('message', async event => {
       const payload: DTMessageRawPayload = JSON.parse(event.data);
 
-      const { msgId, senderId, chatbotUserId, conversationId, sessionWebhook, sessionWebhookExpiredTime } = payload;
+      const {
+        msgId,
+        senderId,
+        senderStaffId,
+        chatbotUserId,
+        robotCode,
+        conversationId,
+        conversationType,
+        sessionWebhook,
+        sessionWebhookExpiredTime,
+      } = payload;
 
       const sessionWebhookPayload: DTSessionWebhookRawPayload = {
         msgId,
         senderId,
+        senderStaffId,
+        robotCode,
         chatbotUserId,
         conversationId,
+        conversationType,
         sessionWebhook,
         sessionWebhookExpiredTime,
       };
@@ -448,28 +472,27 @@ export class PuppetDingTalk extends PUPPET.Puppet {
           id: payload.senderId,
           name: payload.senderNick,
           avatar: '',
-          staffId: payload.senderStaffId,
+          staffId: senderStaffId,
           type: DTContactType.User,
           sessionWebhook,
           sessionWebhookExpiredTime,
         }),
-        // Note: 重复保存是为了更新 sessionWebhook
         contactsStore.set(chatbotUserId, {
           id: chatbotUserId,
           corpId: payload.chatbotCorpId,
-          staffId: payload.robotCode,
+          staffId: robotCode,
           name: `🤖️ 默认`, // TODO 需要自定义机器人名称？
           avatar: '',
           type: DTContactType.Robot,
-          sessionWebhook,
-          sessionWebhookExpiredTime,
+          sessionWebhook: '',
+          sessionWebhookExpiredTime: 0,
         }),
         // Note: wechaty 的消息发送不传递消息ID回来，只给联系人ID 和 群ID
         // 为了快速找到 sessionWebhook，以联系人ID 和 群 ID 各写一次
         sessionWebhooksStore.set(senderId, sessionWebhookPayload, sessionWebhookExpiredTime),
       ];
 
-      if (payload.conversationType === '2') {
+      if (conversationType === '2') {
         const roomPayload: DTRoomRawPayload = {
           id: conversationId,
           topic: payload.conversationTitle!,
@@ -541,24 +564,63 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     }
   }
 
+  /**
+   * 发送互动卡片
+   *
+   * See https://open.dingtalk.com/document/orgapp/private-chat-coolapp-develop-interactive-cards
+   */
+  private async unstable__messageSendInteractiveCard(
+    conversationId: string,
+    interactiveCardPayload: InteractiveCardMessagePayload,
+  ): Promise<void> {
+    const webhook = await this.unstable__discoverWebhookSession(conversationId);
+
+    // @ts-expect-error
+    const data: Dingtalk.Robots.InteractiveCards.InstanceCreateParams = {
+      robotCode: webhook.robotCode,
+      cardData: '{}',
+      ...interactiveCardPayload.interactiveCard,
+    };
+
+    if (webhook.conversationType === '2') {
+      data.openConversationId = webhook.conversationId;
+    } else {
+      if (webhook.senderStaffId) {
+        data.singleChatReceiver = JSON.stringify({
+          staffId: webhook.senderStaffId,
+        });
+      } else {
+        data.singleChatReceiver = JSON.stringify({
+          // TODO 值好像不对？
+          unionId: webhook.senderId,
+        });
+      }
+    }
+
+    // TODO 需要使用事件来通知开发者么？
+    await this._dkClient.robots.interactiveCards.instances.create(data);
+  }
+
   private async unstable__say(
     conversationId: string,
     sayable: Sayable,
     mentionIdList?: true | string[],
   ): Promise<void> {
-    const rawPayload = await this._sessionWebhooksStore.get(conversationId);
-
-    if (!rawPayload) {
-      this.emit('error', {
-        data: GError.stringify(`Webhook ${conversationId} does not exist or has expired`),
-      });
-      return;
-    }
-
-    const sender = new SayableSayer(rawPayload.sessionWebhook, rawPayload.sessionWebhookExpiredTime);
+    const webhook = await this.unstable__discoverWebhookSession(conversationId);
+    const sender = new SayableSayer(webhook.sessionWebhook, webhook.sessionWebhookExpiredTime);
 
     // @ts-expect-error
     await sender.say(sayable, mentionIdList);
+  }
+
+  private async unstable__discoverWebhookSession(conversationId: string): Promise<DTSessionWebhookRawPayload> {
+    const rawPayload = await this._sessionWebhooksStore.get(conversationId);
+
+    if (!rawPayload) {
+      throw GError.stringify(`Webhook ${conversationId} does not exist or has expired`);
+    }
+
+    return rawPayload;
   }
 
   private async unstable_downloadFile(

@@ -186,8 +186,6 @@ export type FeedLink = {
 
 /**
  * FeedCard 消息
- *
- * 接口方式不支持
  */
 export type FeedCardMessagePayload = {
   msgtype: 'feedCard';
@@ -195,6 +193,66 @@ export type FeedCardMessagePayload = {
     links: FeedLink[];
   };
 };
+
+/**
+ * 互动卡片
+ */
+export interface InteractiveCardMessagePayload {
+  msgtype: 'interactive-card';
+  interactiveCard: {
+    /**
+     * 卡片搭建平台模板ID
+     *
+     * 固定值填写为StandardCard
+     */
+    cardTemplateId: string;
+
+    /**
+     * 唯一标识一张卡片的外部ID，卡片幂等ID.
+     *
+     * 可用于更新或重复发送同一卡片到多个群会话。
+     */
+    cardBizId: string;
+
+    /**
+     * 卡片模板文本内容参数，卡片json结构体。
+     */
+    cardData?: string;
+
+    /**
+     * 可控制卡片回调的URL，不填则无需回调。
+     */
+    callbackUrl?: string;
+
+    /**
+     * 卡片模板userId差异用户参数，json结构体。
+     */
+    userIdPrivateDataMap?: string;
+
+    /**
+     * 卡片模板unionId差异用户参数，json结构体。
+     */
+    unionIdPrivateDataMap?: string;
+
+    /**
+     * 互动卡片发送选项。
+     */
+    sendOptions?: {
+      atUserListJson?: string;
+      atAll?: boolean;
+      receiverListJson?: string;
+      cardPropertyJson?: string;
+    };
+
+    /**
+     * 是否开启卡片纯拉模式。
+     *
+     * true：开启卡片纯拉模式
+     * false：不开启卡片纯拉模式
+     */
+    pullStrategy?: boolean;
+  };
+}
 
 /**
  * 机器人发送的消息类型
@@ -210,6 +268,7 @@ export enum MessageType {
   File = 'file',
   ActionCard = 'actionCard',
   FeedCard = 'feedCard',
+  InteractiveCard = 'interactive-card',
 }
 
 type At = {
@@ -231,6 +290,7 @@ type MessagePayloadMap = {
   [MessageType.File]: FileMessagePayload;
   [MessageType.ActionCard]: ActionCardMessagePayload;
   [MessageType.FeedCard]: FeedCardMessagePayload;
+  [MessageType.InteractiveCard]: InteractiveCardMessagePayload;
 };
 
 /**

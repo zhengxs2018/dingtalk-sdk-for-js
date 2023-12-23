@@ -1,4 +1,9 @@
-import { AuthCredential, CorpAuthCredential, IdentityClient, type IdentityClientOptions } from '@zhengxs/dingtalk-auth';
+import {
+  type AuthCredential,
+  type CorpAuthCredential,
+  IdentityClient,
+  type IdentityClientOptions,
+} from '@zhengxs/dingtalk-auth';
 import {
   APIConnectionError,
   APIConnectionTimeoutError,

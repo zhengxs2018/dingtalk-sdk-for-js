@@ -211,8 +211,11 @@ export function dtRoomToWechaty(_: PUPPET.Puppet, payload: DTRoomRawPayload): Pr
 export interface DTSessionWebhookRawPayload {
   chatbotUserId: string;
   conversationId: string;
+  conversationType: '1' | '2';
   msgId: string;
+  robotCode: string;
   senderId: string;
+  senderStaffId?: string;
   sessionWebhook: string;
   sessionWebhookExpiredTime: number;
 }
@@ -291,6 +294,28 @@ export type ImageMessagePayload = {
 };
 
 // @public
+export interface InteractiveCardMessagePayload {
+  // (undocumented)
+  interactiveCard: {
+    cardTemplateId: string;
+    cardBizId: string;
+    cardData?: string;
+    callbackUrl?: string;
+    userIdPrivateDataMap?: string;
+    unionIdPrivateDataMap?: string;
+    sendOptions?: {
+      atUserListJson?: string;
+      atAll?: boolean;
+      receiverListJson?: string;
+      cardPropertyJson?: string;
+    };
+    pullStrategy?: boolean;
+  };
+  // (undocumented)
+  msgtype: 'interactive-card';
+}
+
+// @public
 export type LinkMessagePayload = {
   msgtype: 'link';
   link: {
@@ -331,6 +356,8 @@ export enum MessageType {
   File = 'file',
   // (undocumented)
   Image = 'image',
+  // (undocumented)
+  InteractiveCard = 'interactive-card',
   // (undocumented)
   Link = 'link',
   // (undocumented)
@@ -379,7 +406,10 @@ export class PuppetDingTalk extends PUPPET.Puppet {
     mentionIdList?: string[],
   ): Promise<void>;
   // (undocumented)
-  messageSendUrl(conversationId: string, urlLinkPayload: PUPPET.payloads.UrlLink | MessagePayload): Promise<void>;
+  messageSendUrl(
+    conversationId: string,
+    urlLinkPayload: PUPPET.payloads.UrlLink | MessagePayload,
+  ): Promise<string | void>;
   // (undocumented)
   protected _messagesStore: Keyv<DTMessageRawPayload>;
   // (undocumented)
