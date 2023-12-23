@@ -1,7 +1,5 @@
-import { type MarkdownMessagePayload, type MessagePayload, MessageType, type TextMessagePayload } from './payloads';
+import { type MarkdownMessagePayload, type MessagePayload, MessageType, type Sayable, type TextMessagePayload } from './payloads';
 import { Sender } from './sender';
-
-export type Sayable = string | MessagePayload;
 
 export class SayableSayer extends Sender {
   async say(sayable: Sayable): Promise<any>;

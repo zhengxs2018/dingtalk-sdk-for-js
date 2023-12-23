@@ -25,6 +25,7 @@ words:
   - errcode
   - errmsg
   - fieldname
+  - flac
   - gerror
   - idempotency
   - impls
@@ -34,6 +35,7 @@ words:
   - nodenext
   - picocolors
   - preinstall
+  - rmvb
   - trivago
   - unawaited
   - wechat
