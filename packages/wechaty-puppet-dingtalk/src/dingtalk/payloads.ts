@@ -230,3 +230,5 @@ type MessagePayloadMap = {
  * https://open.dingtalk.com/document/orgapp/robot-message-types-and-data-format
  */
 export type MessagePayload = MessagePayloadMap[MessageType];
+
+export type Sayable = string | MessagePayload;

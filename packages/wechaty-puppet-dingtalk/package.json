@@ -26,6 +26,7 @@
     "extract-api": "mkdirp ./review && api-extractor run --local"
   },
   "dependencies": {
+    "@alloc/quick-lru": "^5.2.0",
     "@zhengxs/dingtalk": "workspace:^",
     "@zhengxs/dingtalk-auth": "workspace:^",
     "@zhengxs/dingtalk-event-hubs": "workspace:^",
@@ -34,6 +35,7 @@
     "file-box": "^1.4.15",
     "form-data-encoder": "^4.0.2",
     "gerror": "^1.0.16",
+    "keyv": "^4.5.4",
     "wechaty-puppet": "^1.20.2",
     "ws": "^8.15.1"
   },

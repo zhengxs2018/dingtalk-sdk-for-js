@@ -8,12 +8,11 @@ export async function dtContactToWechaty(
 ): Promise<PUPPET.payloads.Contact> {
   const ret: PUPPET.payloads.Contact = {
     id: payload.id,
-    avatar: '',
+    avatar: payload.id,
     type: PUPPET.types.Contact.Individual,
     gender: PUPPET.types.ContactGender.Unknown,
     name: payload.name,
-    handle: payload.id,
-    friend: true,
+    handle: payload.staffId,
     phone: [],
   };
 
