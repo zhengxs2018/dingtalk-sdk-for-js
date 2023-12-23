@@ -33,43 +33,6 @@ const AudioExtRE = /\.(mp3|wav|wma|ogg|aac|flac)$/i;
 const VideoExtRE = /\.(mp4|mov|avi|rmvb|mkv|flv|rm|asf|3gp|wmv)$/i;
 const ImageExtRE = /\.(jpg|jpeg|png|gif|bmp|webp)$/i;
 
-/**
- * 获取视频或音频的时长
- *
- * 如果是视频或音频，需要手动传递时长，而且是强制要求传递时长的。
- * 但调用钉钉的上传接口，钉钉并没有返回时长，所以需要手动获取时长。
- *
- * 参考：[机器人发送消息的类型](https://open.dingtalk.com/document/orgapp/types-of-messages-sent-by-robots)
- *
- * @example 修复音频时长
- *
- * ```ts
- * import os from 'node:os';
- * import path from 'node:path';
- * import { unlinkSync } from 'node:fs';
- *
- * import { PuppetDingTalk } from '@zhengxs/wechaty-puppet-dingtalk'
- * import { getAudioDurationInSeconds } from 'get-audio-duration'
- *
- * const puppet = new PuppetDingTalk({
- *   async getAudioDurationInSeconds(fileBox) {
- *     // 生成临时文件地址
- *     const saveTo = path.resolve(os.tmpdir(), fileBox.name)
- *
- *     // 保存到临时文件
- *     await fileBox.toFile(saveTo)
- *
- *     try {
- *       // 获取时长
- *       return await getAudioDurationInSeconds(saveTo)
- *     } finally {
- *        // 删除临时文件
- *        unlinkSync(saveTo)
- *     }
- *   },
- * })
- * ```
- */
 export type GetMediaDurationInSeconds = (fileBox: FileBoxInterface) => Promise<number>;
 
 export interface PuppetDingTalkOptions extends PUPPET.PuppetOptions {
@@ -113,20 +76,70 @@ export interface PuppetDingTalkOptions extends PUPPET.PuppetOptions {
    * 默认为 `true`
    */
   clearCacheAfterLogout?: boolean;
-
   /**
-   * 获取视频时长
+   * 获取音频时长
    *
-   * @returns 以秒为单位的视频时长
-   */
-  getVideoDurationInSeconds?: GetMediaDurationInSeconds;
-
-  /**
-   * 获取视频时长
+   * 如果是视频或音频，需要手动传递时长，而且是强制要求传递时长的。
+   * 但调用钉钉的上传接口，钉钉并没有返回时长，所以需要手动获取时长。
    *
-   * @returns 以秒为单位的视频时长
+   * 参考：[机器人发送消息的类型](https://open.dingtalk.com/document/orgapp/types-of-messages-sent-by-robots)
+   *
+   * @example 修复音频时长显示错误
+   *
+   * ```ts
+   * import os from 'node:os';
+   * import path from 'node:path';
+   * import { unlinkSync } from 'node:fs';
+   *
+   * import { PuppetDingTalk } from '@zhengxs/wechaty-puppet-dingtalk'
+   * import { getAudioDurationInSeconds } from 'get-audio-duration'
+   *
+   * const puppet = new PuppetDingTalk({
+   *   async getAudioDurationInSeconds(fileBox) {
+   *     // 生成临时文件地址
+   *     const saveTo = path.resolve(os.tmpdir(), fileBox.name)
+   *
+   *     // 保存到临时文件
+   *     await fileBox.toFile(saveTo)
+   *
+   *     try {
+   *       // 获取时长
+   *       return await getAudioDurationInSeconds(saveTo)
+   *     } finally {
+   *        // 删除临时文件
+   *        unlinkSync(saveTo)
+   *     }
+   *   },
+   * })
+   * ```
    */
   getAudioDurationInSeconds?: GetMediaDurationInSeconds;
+  /**
+   * 获取视频时长
+   *
+   * 如果是视频或音频，需要手动传递时长，而且是强制要求传递时长的。
+   * 但调用钉钉的上传接口，钉钉并没有返回时长，所以需要手动获取时长。
+   *
+   * 参考：[机器人发送消息的类型](https://open.dingtalk.com/document/orgapp/types-of-messages-sent-by-robots)
+   *
+   * @example 修复视频时长显示错误
+   *
+   * ```ts
+   * import os from 'node:os';
+   * import path from 'node:path';
+   * import { unlinkSync } from 'node:fs';
+   *
+   * import { PuppetDingTalk } from '@zhengxs/wechaty-puppet-dingtalk'
+   * import { getVideoDurationInSeconds } from 'get-video-duration'
+   *
+   * const puppet = new PuppetDingTalk({
+   *   async getVideoDurationInSeconds(fileBox) {
+   *     return await getVideoDurationInSeconds(await fileBox.toStream())
+   *   },
+   * })
+   * ```
+   */
+  getVideoDurationInSeconds?: GetMediaDurationInSeconds;
 }
 
 export class PuppetDingTalk extends PUPPET.Puppet {

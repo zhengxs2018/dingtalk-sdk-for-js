@@ -279,7 +279,7 @@ export type FileMessagePayload = {
   };
 };
 
-// @public
+// @public (undocumented)
 export type GetMediaDurationInSeconds = (fileBox: FileBoxInterface) => Promise<number>;
 
 // @public (undocumented)
