@@ -359,7 +359,23 @@ export class PuppetDingTalk extends PUPPET.Puppet {
       }
 
       case ImageExtRE.test(ext): {
-        throw new Error(`暂不支持图片的发送`);
+        // hack 强制获取私有的 remoteUrl 属性
+        // @ts-expect-error
+        const remoteUrl = fileBox.remoteUrl
+        if (remoteUrl) {
+          await this.unstable__say(conversationId, {
+            msgtype: 'image',
+            image: {
+              picURL: remoteUrl,
+            },
+          });
+          break
+        }
+
+        throw new GError({
+          code: 12,
+          message: '暂不支持以本地文件的方式上传图片'
+        })
       }
 
       default:
