@@ -20,7 +20,8 @@
     "@zhengxs/dingtalk-event-hubs": "workspace:^",
     "@zhengxs/wechaty-dingtalk-message": "workspace:^",
     "@zhengxs/wechaty-puppet-dingtalk": "workspace:^",
-    "file-box": "^1.4.15"
+    "file-box": "^1.4.15",
+    "get-audio-duration": "^4.0.1"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.38.3",

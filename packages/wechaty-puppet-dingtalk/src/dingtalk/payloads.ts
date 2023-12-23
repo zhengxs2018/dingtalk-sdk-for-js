@@ -51,7 +51,16 @@ export type ImageMessagePayload = {
 export type AudioMessagePayload = {
   msgtype: 'audio';
   audio: {
+    /**
+     * 视频封面图片媒体文件ID
+     *
+     * 通过上传媒体文件接口得到的 mediaId
+     */
     mediaId: string;
+
+    /**
+     * 视频时长，单位：豪秒
+     */
     duration: number;
   };
 };
@@ -83,7 +92,7 @@ export type VideoMessagePayload = {
     /**
      * 视频时长，单位：秒
      */
-    duration: string;
+    duration: string | number;
     /**
      * 视频展示宽度，单位px
      */
