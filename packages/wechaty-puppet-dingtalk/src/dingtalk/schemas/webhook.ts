@@ -12,15 +12,30 @@ export interface DTSessionWebhookRawPayload {
    */
   senderId: string;
 
+  /***
+   * 发送者的员工ID
+   */
+  senderStaffId?: string;
+
   /**
    * 机器人ID
    */
   chatbotUserId: string;
 
   /**
+   * 机器人编码
+   */
+  robotCode: string;
+
+  /**
    * 会话ID
    */
   conversationId: string;
+
+  /**
+   * 会话类型
+   */
+  conversationType: '1' | '2';
 
   /**
    * Webhook 地址

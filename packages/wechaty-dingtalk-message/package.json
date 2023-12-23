@@ -1,6 +1,6 @@
 {
   "name": "@zhengxs/wechaty-dingtalk-message",
-  "version": "0.0.1-beta.0",
+  "version": "0.0.1-beta.1",
   "description": "",
   "sideEffect": false,
   "main": "./dist/index.cjs",
@@ -26,6 +26,7 @@
     "extract-api": "mkdirp ./review && api-extractor run --local"
   },
   "dependencies": {
+    "@zhengxs/dingtalk": "workspace:^",
     "@zhengxs/wechaty-puppet-dingtalk": "workspace:^",
     "wechaty": "^1.20.2"
   },

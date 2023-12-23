@@ -5,6 +5,7 @@
 ```ts
 import { ActionCardMessagePayload } from '@zhengxs/wechaty-puppet-dingtalk';
 import { FeedCardMessagePayload } from '@zhengxs/wechaty-puppet-dingtalk';
+import { InteractiveCardMessagePayload } from '@zhengxs/wechaty-puppet-dingtalk';
 import { MarkdownMessagePayload } from '@zhengxs/wechaty-puppet-dingtalk';
 import { MessagePayload } from '@zhengxs/wechaty-puppet-dingtalk';
 import { UrlLinkImpl } from 'wechaty/impls';
@@ -17,6 +18,11 @@ export class ActionCard extends UrlLinkImpl {
 // @public (undocumented)
 export class FeedCard extends UrlLinkImpl {
   constructor(payload: FeedCardMessagePayload['feedCard']);
+}
+
+// @public (undocumented)
+export class InteractiveCard extends UrlLinkImpl {
+  constructor(payload: InteractiveCardMessagePayload['interactiveCard']);
 }
 
 // @public (undocumented)
