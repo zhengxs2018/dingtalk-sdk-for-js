@@ -518,7 +518,7 @@ export class PuppetDingTalk extends PUPPET.Puppet {
 
       // Note: 未登录，就触发登录事件
       if (!this.isLoggedIn) {
-        await this.login(senderId);
+        await this.login(chatbotUserId);
       }
 
       this.emit('message', { messageId: payload.msgId });
