@@ -1,0 +1,27 @@
+{
+  "name": "examples",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "pnpm task ./src/hello.ts",
+    "dev": "pnpm task --watch --watch-preserve-output ./src/hello.ts",
+    "task": "tsx --no-warnings -r dotenv/config"
+  },
+  "dependencies": {
+    "@zhengxs/dingtalk-auth": "workspace:^",
+    "@zhengxs/dingtalk-event-hubs": "workspace:^",
+    "@zhengxs/wechaty-dingtalk-message": "workspace:^",
+    "@zhengxs/wechaty-puppet-dingtalk": "workspace:^",
+    "agentkeepalive": "^4.5.0",
+    "dotenv": "^16.3.1",
+    "file-box": "^1.4.15",
+    "form-data-encoder": "^4.0.2",
+    "get-audio-duration": "^4.0.1",
+    "wechaty": "^1.20.2",
+    "ws": "^8.15.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.11.0"
+  }
+}

@@ -34,9 +34,11 @@ words:
   - msgtype
   - nodenext
   - picocolors
+  - postpublish
   - preinstall
   - rmvb
   - trivago
+  - tsdoc
   - unawaited
   - wechat
   - wechatified

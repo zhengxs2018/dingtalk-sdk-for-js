@@ -1,6 +1,5 @@
 import { extname } from 'node:path';
 
-import QuickLRU from '@alloc/quick-lru';
 import { Dingtalk } from '@zhengxs/dingtalk';
 import { AuthCredential } from '@zhengxs/dingtalk-auth';
 import { type HubConnection, HubConnectionBuilder } from '@zhengxs/dingtalk-event-hubs';
@@ -8,6 +7,7 @@ import { toFile } from '@zhengxs/http';
 import { FileBox, type FileBoxInterface } from 'file-box';
 import { GError } from 'gerror';
 import Keyv from 'keyv';
+import QuickLRU from 'quick-lru';
 import * as PUPPET from 'wechaty-puppet';
 import { log } from 'wechaty-puppet';
 
@@ -575,12 +575,11 @@ export class PuppetDingTalk extends PUPPET.Puppet {
   ): Promise<void> {
     const webhook = await this.unstable__discoverWebhookSession(conversationId);
 
-    // @ts-expect-error
-    const data: Dingtalk.Robots.InteractiveCards.InstanceCreateParams = {
+    const data = {
       robotCode: webhook.robotCode,
       cardData: '{}',
       ...interactiveCardPayload.interactiveCard,
-    };
+    } as Dingtalk.Robots.InteractiveCards.InstanceCreateParams;
 
     if (webhook.conversationType === '2') {
       data.openConversationId = webhook.conversationId;

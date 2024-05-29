@@ -1,8 +1,6 @@
-import type { EventEmitter as NativeEventEmitter } from 'node:events';
-
 import Backoff from 'backo2';
 
-import { EventEmitter, WebSocket as NativeWebSocket } from './_shims/registry';
+import { EventEmitter, WebSocket as NativeWebSocket } from './_shims';
 import type { HttpLink } from './HttpLink';
 import type { EffectCleanup, GraphAPIResponse, ParsedEvent, SendMessage } from './types';
 
@@ -25,7 +23,7 @@ export class HubConnection {
   protected httpLink?: HttpLink;
 
   private backoff: Backoff;
-  private emitter: NativeEventEmitter;
+  private emitter: EventEmitter;
 
   private closedByUser: boolean;
   private wasKeepAliveReceived: boolean;
@@ -68,7 +66,7 @@ export class HubConnection {
     this.unsentMessagesQueue = [];
 
     this.backoff = new Backoff({ jitter: 0.5 });
-    this.emitter = new EventEmitter!();
+    this.emitter = new EventEmitter();
 
     this.effects = [];
     this.closedByUser = false;

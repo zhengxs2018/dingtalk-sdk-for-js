@@ -8,7 +8,7 @@
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "verbatimModuleSyntax": true,
     "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
@@ -21,5 +21,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
-  }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

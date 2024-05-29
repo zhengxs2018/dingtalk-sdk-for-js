@@ -1,4 +1,4 @@
-import { AuthCredential, CorpAuthCredential, IdentityClient } from '@zhengxs/dingtalk-auth';
+import type { AuthCredential, CorpAuthCredential, IdentityClient } from '@zhengxs/dingtalk-auth';
 
 import type { ConnectionParamsOptions, OperationOption } from './types';
 

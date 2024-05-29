@@ -1,5 +1,5 @@
 // @ts-check
-const { defineConfig } = require('eslint-define-config')
+const { defineConfig } = require('eslint-define-config');
 
 module.exports = defineConfig({
   root: true,
@@ -7,6 +7,7 @@ module.exports = defineConfig({
     sourceType: 'module',
     ecmaVersion: 'latest',
   },
+  ignorePatterns: ['dist'],
   overrides: [
     {
       extends: ['plugin:@typescript-eslint/recommended'],
@@ -34,4 +35,4 @@ module.exports = defineConfig({
       },
     },
   ],
-})
+});

@@ -9,8 +9,7 @@ import {
   Stream,
 } from '@zhengxs/http';
 
-import type { TokenResponse } from '../dist-types';
-import { type TokenCredential } from './credentials/TokenCredential';
+import { type TokenCredential, type TokenResponse } from './credentials/TokenCredential';
 import { assertErrCodeOfZero } from './util';
 
 /**
