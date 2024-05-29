@@ -66,8 +66,8 @@ export {
 };
 
 export namespace Dingtalk {
-  export type Robots = API.Robots;
-  export type Files = API.Files;
+  export import Robots = API.Robots;
+  export import Files = API.Files;
 }
 
 export default Dingtalk;

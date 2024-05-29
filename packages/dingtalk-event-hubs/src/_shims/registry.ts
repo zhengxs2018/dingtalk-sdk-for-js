@@ -1,14 +1,18 @@
+import type events from 'node:events'
+
 export type WebSocket = globalThis.WebSocket;
 
 export interface Shims {
   kind: string;
   WebSocket: any;
-  EventEmitter: any;
+  EventEmitter: new () => any;
 }
 
-export let kind: Shims['kind'] | undefined = undefined;
-export let WebSocket: Shims['WebSocket'] | undefined = undefined;
-export let EventEmitter: Shims['EventEmitter'] | undefined = undefined;
+export let kind: Shims['kind'];
+export let WebSocket: Shims['WebSocket'];
+export let EventEmitter: Shims['EventEmitter'];
+
+export type EventEmitter = events.EventEmitter<any>;
 
 export function setShims(shims: Shims) {
   kind = shims.kind;

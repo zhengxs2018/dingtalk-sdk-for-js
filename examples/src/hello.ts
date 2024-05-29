@@ -1,8 +1,11 @@
 import path from 'node:path';
+import { fileURLToPath } from 'node:url'
 
 import { PuppetDingTalk } from '@zhengxs/wechaty-puppet-dingtalk';
 import { FileBox } from 'file-box';
 import { WechatyBuilder } from 'wechaty';
+
+const __dirname =  path.dirname(fileURLToPath(import.meta.url));
 
 const puppet = new PuppetDingTalk({
   clientId: process.env.DINGTALK_CLIENT_ID,
@@ -44,4 +47,5 @@ bot.on('message', async msg => {
   }
 });
 
-bot.start();
+await bot.start();
+console.log('Bot Started.');

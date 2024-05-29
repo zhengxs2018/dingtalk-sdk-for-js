@@ -1,19 +1,33 @@
 import { defineConfig } from 'vite';
 import checker from 'vite-plugin-checker';
 import dts from 'vite-plugin-dts';
-import { externalizeDeps } from 'vite-plugin-externalize-deps';
+import { viteStaticCopy as copy } from 'vite-plugin-static-copy'
+import { externalizeDeps as external } from 'vite-plugin-externalize-deps';
 
 import pkg from './package.json';
 
 export default defineConfig({
   appType: 'custom',
   plugins: [
-    externalizeDeps(),
-    dts({
-      outDir: './dist-types',
-    }),
+    external(),
     checker({
       typescript: true,
+    }),
+    dts(),
+    dts({
+      beforeWriteFile(filePath, content) {
+        return {
+          filePath: filePath.replace(/\.d\.ts$/, '.d.mts'),
+          content,
+        };
+      },
+    }),
+    copy({
+      targets: [
+        { src: 'src', dest: '' },
+        { src: 'README.md', dest: '' },
+        { src: 'package.json', dest: '' },
+      ],
     }),
   ],
   define: {
@@ -23,33 +37,23 @@ export default defineConfig({
   esbuild: {
     // wechaty 的 UrlLink 内部会检查 class 的名字
     // 所以这里需要保留
-    keepNames: true
+    keepNames: true,
+    minifyIdentifiers: false,
   },
   build: {
     target: 'esnext',
-    sourcemap: true,
+    sourcemap: false,
     copyPublicDir: false,
-    reportCompressedSize: false,
     lib: {
-      entry: 'src/index.ts'
+      entry: ['src/index.ts'],
+      formats: ['es', 'cjs']
     },
     rollupOptions: {
-      output: [
-        {
-          format: 'esm',
-          dir: 'dist',
-          exports: 'named',
-          entryFileNames: '[name].mjs',
-          chunkFileNames: '[name].mjs',
-        },
-        {
-          format: 'cjs',
-          dir: 'dist',
-          exports: 'named',
-          entryFileNames: '[name].cjs',
-          chunkFileNames: '[name].cjs',
-        },
-      ],
+      output: {
+        exports: 'named',
+        // See https://github.com/vitejs/vite/issues/5174
+        preserveModules: true,
+      },
     },
   },
 });

@@ -8,8 +8,7 @@ export class Robots extends APIResource {
 }
 
 export namespace Robots {
-  export type Messages = MessagesAPI.Messages;
+  export import Messages = MessagesAPI.Messages;
   export type MessageFile = MessagesAPI.MessageFile;
-
-  export type InteractiveCards = InteractiveCardsAPI.InteractiveCards;
+  export import InteractiveCards = InteractiveCardsAPI.InteractiveCards;
 }

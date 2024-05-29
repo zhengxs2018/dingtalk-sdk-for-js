@@ -6,7 +6,7 @@ export class InteractiveCards extends APIResource {
 }
 
 export namespace InteractiveCards {
-  export type Instances = InstancesAPI.Instances;
+  export import Instances = InstancesAPI.Instances;
   export type InstanceCreateParams = InstancesAPI.InstanceCreateParams;
   export type InstanceCreateParamsRoom = InstancesAPI.InstanceCreateParamsRoom;
   export type InstanceCreateParamsNonRoom = InstancesAPI.InstanceCreateParamsNonRoom;

@@ -1,48 +1,14 @@
 {
   "name": "@zhengxs/wechaty-puppet-dingtalk",
-  "version": "0.0.1-beta.9",
-  "description": "",
-  "sideEffect": false,
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist-types/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "types": "./dist-types/index.d.ts"
-    },
-    "./package.json": "./package.json"
-  },
-  "files": [
-    "dist",
-    "dist-types",
-    "src"
+  "version": "0.1.0",
+  "description": "The Non-official puppet based on wechaty for DingTalk",
+  "keywords": [
+    "wechaty",
+    "wechaty-puppet",
+    "dingtalk",
+    "bot",
+    "chatbot"
   ],
-  "scripts": {
-    "build": "pnpm clean && vite build && pnpm extract-api",
-    "watch": "vite build --watch",
-    "clean": "trash dist dist-types temp",
-    "extract-api": "mkdirp ./review && api-extractor run --local"
-  },
-  "dependencies": {
-    "@alloc/quick-lru": "^5.2.0",
-    "@zhengxs/dingtalk": "workspace:^",
-    "@zhengxs/dingtalk-auth": "workspace:^",
-    "@zhengxs/dingtalk-event-hubs": "workspace:^",
-    "@zhengxs/http": "^0.0.1-rc.6",
-    "agentkeepalive": "^4.5.0",
-    "file-box": "^1.4.15",
-    "form-data-encoder": "^4.0.2",
-    "gerror": "^1.0.16",
-    "keyv": "^4.5.4",
-    "wechaty-puppet": "^1.20.2",
-    "ws": "^8.15.1"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
-  },
   "homepage": "https://github.com/zhengxs2018/dingtalk-sdk-for-js#readme",
   "repository": {
     "type": "git",
@@ -54,7 +20,59 @@
   },
   "author": "zhengxs <zhengxs2018@gmail.com>",
   "license": "MIT",
-  "devDependencies": {
-    "jimp": "^0.22.10"
+  "type": "commonjs",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "imports": {
+    "@zhengxs/wechaty-puppet-dingtalk": ".",
+    "@zhengxs/wechaty-puppet-dingtalk/*": "./src/*"
+  },
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./index.js"
+      },
+      "types": "./index.d.mts",
+      "default": "./index.mjs"
+    },
+    "./*.mjs": {
+      "types": "./*.d.ts",
+      "default": "./*.mjs"
+    },
+    "./*.js": {
+      "types": "./*.d.ts",
+      "default": "./*.js"
+    },
+    "./*": {
+      "types": "./*.d.ts",
+      "require": "./*.js",
+      "default": "./*.mjs"
+    }
+  },
+  "sideEffect": false,
+  "files": [
+    "*"
+  ],
+  "private": false,
+  "publishConfig": {
+    "directory": "dist",
+    "registry": "https://registry.npmjs.org"
+  },
+  "scripts": {
+    "build": "vite build",
+    "watch": "vite build --watch --mode development",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "quick-lru": "^7.0.0",
+    "@zhengxs/dingtalk": "workspace:^",
+    "@zhengxs/dingtalk-auth": "workspace:^",
+    "@zhengxs/dingtalk-event-hubs": "workspace:^",
+    "@zhengxs/http": "^0.0.1-rc.6",
+    "file-box": "^1.4.15",
+    "gerror": "^1.0.16",
+    "keyv": "^4.5.4",
+    "wechaty-puppet": "^1.20.2"
   }
 }

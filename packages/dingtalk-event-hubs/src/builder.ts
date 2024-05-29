@@ -1,8 +1,8 @@
-import { AuthCredential, IdentityClient } from '@zhengxs/dingtalk-auth';
+import { type AuthCredential, type IdentityClient } from '@zhengxs/dingtalk-auth';
 
 import { HubConnection, type HubConnectionOptions } from './connection';
 import { HttpLink } from './HttpLink';
-import type { ConnectionParamsOptions } from './types';
+import { type ConnectionParamsOptions } from './types';
 
 export class HubConnectionBuilder {
   protected url?: string;
