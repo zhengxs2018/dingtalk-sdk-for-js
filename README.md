@@ -107,9 +107,20 @@ bot.start();
 或者使用以下命令进行本地开发：
 
 ```bash
-$ git clone https://github.com/zhengxs2018/wechaty-puppet-dingtalk.git
-$ cd wechaty-puppet-dingtalk
+$ git clone https://github.com/zhengxs2018/dingtalk-sdk-for-js.git
+$ cd dingtalk-sdk-for-js
 $ pnpm install
+```
+
+因 WebSocket 问题，导致每次编译都会重启，所以需要分2个终端启动：
+
+```bash
+# 终端一
+# 启动依赖监听
+$ pnpm watch
+
+# 终端二
+# 启用示例
 $ pnpm dev
 ```
 
