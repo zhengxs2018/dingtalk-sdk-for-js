@@ -78,7 +78,7 @@ $ pnpm add @zhengxs/wechaty-puppet-dingtalk
 
 ```ts
 import { PuppetDingTalk } from '@zhengxs/wechaty-puppet-dingtalk';
-import { WechatyBuilder } from 'wechaty';
+import { log, WechatyBuilder } from 'wechaty';
 
 const bot = WechatyBuilder.build({
   puppet: new PuppetDingTalk({
