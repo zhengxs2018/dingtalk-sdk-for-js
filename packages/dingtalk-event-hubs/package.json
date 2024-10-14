@@ -1,6 +1,6 @@
 {
   "name": "@zhengxs/dingtalk-event-hubs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The Non-official TypeScript library for the DingTalk Open API",
   "keywords": [
     "dingtalk",
@@ -72,8 +72,7 @@
     "./shims/web.mjs"
   ],
   "files": [
-    "dist",
-    "src"
+    "*"
   ],
   "private": false,
   "publishConfig": {
@@ -103,7 +102,7 @@
   },
   "devDependencies": {
     "@types/backo2": "^1.0.4",
-    "@types/ws": "^8.5.9",
+    "@types/ws": "^8.5.12",
     "eventemitter3": "^5.0.1"
   }
 }
